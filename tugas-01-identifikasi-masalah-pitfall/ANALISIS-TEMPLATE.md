@@ -4,9 +4,9 @@
 
 | Nama | NIM | Kontribusi |
 |---|---|---|
-| [ANDI ATHALLAH RADJA | [103072400034] | [ single point of failure karena arsitektur monolitik ] |
-| [KRISNA PUTRA WICAKSANA] | [103072400079] | [ network is always reliable ] |
-| [CALVIN IMMANUEL LADO] | [103072400158] | [ bandwith is infinite ] |
+| [ ANDI ATHALLAH RADJA | [103072400034] | [ single point of failure karena arsitektur monolitik ] |
+| [ KRISNA PUTRA WICAKSANA ] | [103072400079] | [ network is always reliable ] |
+| [ CALVIN IMMANUEL LADO ] | [103072400158] | [ bandwith is infinite ] |
 
 ## Pitfall 1: [single point of failure karena arsitektur monolitik] — ditulis oleh [[ANDI ATHALLAH RADJA]
 
