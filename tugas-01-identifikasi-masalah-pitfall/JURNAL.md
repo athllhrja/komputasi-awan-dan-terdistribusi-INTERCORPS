@@ -1,7 +1,7 @@
 # Jurnal Proses — Tugas 1
 
 ## [17 September 2026]
-- Peserta: [ANDI ATHALLAH RADJA MALIQ MUHAMMAD, KRISNA PUTRA WICAKSANA, CALVIN IMMANUEL LADO]
+- Peserta: ANDI ATHALLAH RADJA MALIQ MUHAMMAD, KRISNA PUTRA WICAKSANA, CALVIN IMMANUEL LADO
 
 - Poin diskusi: Membaca skenario FoodGo bersama-sama. Kita mengidentifikasi kenapa pas promo jam makan siang servernya selalu modar.
 - Poin utama yang langsung kelihatan: kodenya ada komentar `# network is always reliable, no need for retry` dan tidak ada timeout. Ini jelas-    jelas pitfall 1 Deutsch (*The network is reliable*).
