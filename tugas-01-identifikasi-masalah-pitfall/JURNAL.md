@@ -1,7 +1,5 @@
 # Jurnal Proses — Tugas 1
 
-> Isi jurnal ini selama proses diskusi berlangsung, bukan ditulis ulang rapi di akhir. Tulis dengan gaya bebas — poin diskusi, kebuntuan, perubahan pikiran.
-
 ## [17 September 2026]
 - Peserta: [ANDI ATHALLAH RADJA MALIQ MUHAMMAD, KRISNA PUTRA WICAKSANA, CALVIN IMMANUEL LADO]
 
