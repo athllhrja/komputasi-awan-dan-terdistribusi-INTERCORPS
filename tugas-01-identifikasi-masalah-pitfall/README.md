@@ -32,8 +32,10 @@ Dampak ke FoodGo: Modul pesanan mencoba terhubung ke modul pembayaran tapi jarin
 
 Solusi desain awal:
 
-Timeout & Retry Strategy dengan Exponential Backoff + Jitter: Tentukan batas waktu maksimal, misal timeout 3 detik. Jika tidak ada respons, lakukan retry secara berkala dengan jeda waktu yang meningkat secara acak (jitter) agar tidak membombardir jaringan.
-Circuit Breaker Pattern: Jika modul pembayaran gagal berturut-turut hingga batas ambang tertentu, circuit breaker akan langsung membuka dan mempercepat kegagalan tanpa mencoba memanggil modul pembayaran lagi secara terus-menerus.
+1. Timeout & Retry Strategy dengan Exponential Backoff + Jitter: Tentukan batas waktu maksimal, misal timeout 3 detik. Jika tidak ada respons, lakukan retry secara berkala dengan jeda waktu yang meningkat secara acak (jitter) agar tidak membombardir jaringan.
+
+2. Circuit Breaker Pattern: Jika modul pembayaran gagal berturut-turut hingga batas ambang tertentu, circuit breaker akan langsung membuka dan mempercepat kegagalan tanpa mencoba memanggil modul pembayaran lagi secara terus-menerus.
+   
 Trade-off: Kalau mekanisme retry tidak dibatasi dengan baik, justru bisa bikin kondisi cascading failure makin parah karena payment gateway yang sebenarnya lagi berusaha pulih malah mendapat beban request tambahan. Selain itu, penggunaan fail-fast bikin sistem harus punya solusi cadangan (fallback mechanism) untuk menangani kondisi seperti ini. Misalnya, status pesanan bisa diubah jadi "Menunggu Pembayaran / Pending" daripada langsung dianggap gagal.
 
 ---
@@ -46,9 +48,9 @@ Kenapa ini keliru: Hal ini keliru karena beranggapan bahwa komunikasi antar komp
 
 Dampak ke FoodGo: Saat trafik meningkat, modul pembayaran menerima lebih banyak permintaan sehingga prosesnya bisa menjadi lebih lambat karena modul pesanan menunggu respons dari modul pembayaran sehingga banyak request yang tertahan.
 
-Solusi desain awal:
+Solusi desain awal: Solusi yang dapat digunakan adalah asynchronous communication. Dengan cara ini, modul pesanan tidak harus terus menunggu respons dari modul pembayaran. Jadi setelah mengirim request, proses dapat melanjutkan pekerjaan lain dan respons pembayaran dapat diproses ketika sudah diterima.
 
-Solusi yang dapat digunakan adalah asynchronous communication. Dengan cara ini, modul pesanan tidak harus terus menunggu respons dari modul pembayaran. Jadi setelah mengirim request, proses dapat melanjutkan pekerjaan lain dan respons pembayaran dapat diproses ketika sudah diterima.
+Trade-off: Penggunaan asynchronous communication membuat sistem menjadi lebih kompleks. FoodGo harus mengatur respons yang datang belakangan dan menentukan bagaimana status pesanan jika pembayaran belum selesai atau responsnya terlambat.
 
 ---
 
@@ -58,6 +60,6 @@ FoodGo memiliki beberapa masalah utama, yaitu asumsi bahwa jaringan selalu andal
 
 Untuk mengatasi masalah tersebut, secara garis besar arsitektur yang disarankan untuk FoodGo adalah:
 
-Pemisahan Layanan (Decoupling & Service Isolation) Aplikasi monolitik dapat dipecah menjadi beberapa layanan terpisah (microservices/decoupled services), seperti layanan Pesanan, Pembayaran, dan Notifikasi Kurir. Dengan pemisahan ini, setiap layanan dapat memiliki resource sendiri dan melakukan scaling secara lebih fleksibel sesuai dengan beban masing-masing.
-Penerapan Ketahanan Jaringan (Resilience Patterns) Pada setiap komunikasi antar-service dan payment gateway eksternal, perlu diterapkan mekanisme seperti Timeout, Exponential Backoff Retry dengan Jitter, dan Circuit Breaker. Mekanisme ini membantu mencegah proses terus menunggu respons yang tidak kunjung datang dan mengurangi risiko thread starvation.
-Komunikasi Asinkron (Event-Driven Architecture) Untuk proses yang tidak harus langsung selesai saat pengguna melakukan pemesanan, FoodGo dapat menggunakan Message Broker seperti RabbitMQ atau Apache Kafka. Proses seperti Notifikasi Kurir dan pembaruan status pembayaran dapat dijalankan secara asynchronous di background, sehingga proses pemesanan utama tetap responsif meskipun terjadi lonjakan trafik.
+1. Pemisahan Layanan (Decoupling & Service Isolation) Aplikasi monolitik dapat dipecah menjadi beberapa layanan terpisah (microservices/decoupled services), seperti layanan Pesanan, Pembayaran, dan Notifikasi Kurir. Dengan pemisahan ini, setiap layanan dapat memiliki resource sendiri dan melakukan scaling secara lebih fleksibel sesuai dengan beban masing-masing.
+2. Penerapan Ketahanan Jaringan (Resilience Patterns) Pada setiap komunikasi antar-service dan payment gateway eksternal, perlu diterapkan mekanisme seperti Timeout, Exponential Backoff Retry dengan Jitter, dan Circuit Breaker. Mekanisme ini membantu mencegah proses terus menunggu respons yang tidak kunjung datang dan mengurangi risiko thread starvation.
+3. Komunikasi Asinkron (Event-Driven Architecture) Untuk proses yang tidak harus langsung selesai saat pengguna melakukan pemesanan, FoodGo dapat menggunakan Message Broker seperti RabbitMQ atau Apache Kafka. Proses seperti Notifikasi Kurir dan pembaruan status pembayaran dapat dijalankan secara asynchronous di background, sehingga proses pemesanan utama tetap responsif meskipun terjadi lonjakan trafik.
