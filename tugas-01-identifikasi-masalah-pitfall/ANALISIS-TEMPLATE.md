@@ -4,27 +4,27 @@
 
 | Nama | NIM | Kontribusi |
 |---|---|---|
-| [ ANDI ATHALLAH RADJA | [103072400034] | [ Single point of failure karena arsitektur monolitik ] |
-| [ KRISNA PUTRA WICAKSANA ] | [103072400079] | [ Network is Always Reliable ] |
-| [ CALVIN IMMANUEL LADO ] | [103072400158] | [ Latency Is Zero ] |
+| [ANDI ATHALLAH RADJA] | [103072400034] | [Single point of failure karena arsitektur monolitik] |
+| [KRISNA PUTRA WICAKSANA] | [103072400079] | [Network is Always Reliable] |
+| [CALVIN IMMANUEL LADO] | [103072400158] | [Latency Is Zero] |
 
-## Pitfall 1: [single point of failure karena arsitektur monolitik] — ditulis oleh [[ANDI ATHALLAH RADJA]
+## Pitfall 1: Single point of failure karena arsitektur monolitik — ditulis oleh ANDI ATHALLAH RADJA
 
-**Bukti di skenario:** [ "Saat trafik naik, satu server yang menangani semua modul (pesanan, pembayaran, notifikasi kurir) kewalahan karena semuanya berjalan di satu proses monolitik yang sama"]
+**Bukti di skenario:** "Saat trafik naik, satu server yang menangani semua modul (pesanan, pembayaran, notifikasi kurir) kewalahan karena semuanya berjalan di satu proses monolitik yang sama"
 
-**Kenapa ini keliru:** [karena sistem monolitik ini menggabungkan semua resource untuk komputasi. jika ada satu modul yang menggunakan terlalu banyak resource maka dampaknya tidak akan terisolisasi yang bisa mengakibatkan seluruh proses server mati, dan juga sistemnya tidak bisa di scale per modul sesuai dari kebutuhan modul masing masing]
+**Kenapa ini keliru:** karena sistem monolitik ini menggabungkan semua resource untuk komputasi. jika ada satu modul yang menggunakan terlalu banyak resource maka dampaknya tidak akan terisolisasi yang bisa mengakibatkan seluruh proses server mati, dan juga sistemnya tidak bisa di scale per modul sesuai dari kebutuhan modul masing masing
 
-**Dampak ke FoodGo:** [dampak pada foodgo nya sendiri adalah jika saat jam makan siang atau adanya sebuah promo maka modul pesanan akan menghabiskan semua resource nya dampak nya adalah karena modul pembayaran dan notifikasi kurir nya itu dalam satu proses yang sama maka semuanya akan kewalahan akibatnya server akan crash out dan harus direstart manualt]
+**Dampak ke FoodGo:** dampak pada foodgo nya sendiri adalah jika saat jam makan siang atau adanya sebuah promo maka modul pesanan akan menghabiskan semua resource nya dampak nya adalah karena modul pembayaran dan notifikasi kurir nya itu dalam satu proses yang sama maka semuanya akan kewalahan akibatnya server akan crash out dan harus direstart manualt
 
-**Solusi desain awal:** [solusi yang saya sarankan adalah dengan menggunakan Microservices jadi semua modul akan dijalankan secara terpisah dengan pemisahan service ini semua modul bisa discale secara indpenden]
+**Solusi desain awal:** solusi yang saya sarankan adalah dengan menggunakan Microservices jadi semua modul akan dijalankan secara terpisah dengan pemisahan service ini semua modul bisa discale secara indpenden
 
-**Trade-off:** [maintenance akan jauh lebih sulit karena setiap sistem punya enviroment nya masing masing]
+**Trade-off:** maintenance akan jauh lebih sulit karena setiap sistem punya enviroment nya masing masing
 
 ---
 
 ## Pitfall 2: Network is Always Reliable — ditulis oleh KRISNA PUTRA WICAKSANA
 
-Bukti di skenario: Pada code skenario mereka menulis asumsi seperti # network is always reliable, no need for retry dan tidak ada timeout sama sekali pada pemanggilan antar service (modul pesanan memanggil modul pembayaran dan menunggu tanpa batas waktu)
+Bukti di skenario: "Pada code skenario mereka menulis asumsi seperti # network is always reliable, no need for retry dan tidak ada timeout sama sekali pada pemanggilan antar service (modul pesanan memanggil modul pembayaran dan menunggu tanpa batas waktu)"
 
 Kenapa ini keliru: Jaringan fisik (LAN maupun internet) tidak pernah 100% selalu berjalan dengan baik. Selalu ada risiko packet loss, network congestion, fluktuasi sinyal, hingga gangguan pada gateway/API payment provider pihak ketiga. Kalau kita berpikir jaringan selalu lancar, aplikasi jadi seakan-akan yakin setiap request pasti sampai dan responsnya langsung diterima.
 
