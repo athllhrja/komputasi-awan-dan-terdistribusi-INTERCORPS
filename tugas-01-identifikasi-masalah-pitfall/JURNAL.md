@@ -9,7 +9,7 @@
 - Poin utama yang langsung kelihatan: kodenya ada komentar `# network is always reliable, no need for retry` dan tidak ada timeout. Ini jelas-    jelas pitfall 1 Deutsch (*The network is reliable*).
 - server crash total: ternyata karena arsitekturnya masih monolitik run di 1 proses yang sama. Waktu modul notifikasi kurir sibuk, modul pesanan ikut mati.
   
-- Perbedaan pendapat (jika ada): ....
+- Perbedaan pendapat (jika ada): -
 
 ## Review Silang
 - ANDI ATHALLAH RADJA MALIQ MUHAMMAD Komentar ke CALVIN IMMANUEL LADO: Catatan soal user nge-klik tombol berulang kali saat aplikasi lambat sangat pas untuk memperkuat bagian dampak Latency is Zero.
