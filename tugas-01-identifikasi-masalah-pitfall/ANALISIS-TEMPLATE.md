@@ -4,9 +4,9 @@
 
 | Nama | NIM | Kontribusi |
 |---|---|---|
-| [ ANDI ATHALLAH RADJA | [103072400034] | [ single point of failure karena arsitektur monolitik ] |
-| [ KRISNA PUTRA WICAKSANA ] | [103072400079] | [ network is always reliable ] |
-| [ CALVIN IMMANUEL LADO ] | [103072400158] | [ bandwith is infinite ] |
+| [ ANDI ATHALLAH RADJA | [103072400034] | [ Single point of failure karena arsitektur monolitik ] |
+| [ KRISNA PUTRA WICAKSANA ] | [103072400079] | [ Network is Always Reliable ] |
+| [ CALVIN IMMANUEL LADO ] | [103072400158] | [ Latency Is Zero ] |
 
 ## Pitfall 1: [single point of failure karena arsitektur monolitik] — ditulis oleh [[ANDI ATHALLAH RADJA]
 
@@ -22,7 +22,7 @@
 
 ---
 
-## Pitfall 2: The Network is Reliable — ditulis oleh KRISNA PUTRA WICAKSANA
+## Pitfall 2: Network is Always Reliable — ditulis oleh KRISNA PUTRA WICAKSANA
 
 Bukti di skenario: Pada code skenario mereka menulis asumsi seperti # network is always reliable, no need for retry dan tidak ada timeout sama sekali pada pemanggilan antar service (modul pesanan memanggil modul pembayaran dan menunggu tanpa batas waktu)
 
