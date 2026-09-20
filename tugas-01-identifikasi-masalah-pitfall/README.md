@@ -56,7 +56,7 @@ Trade-off: Penggunaan asynchronous communication membuat sistem menjadi lebih ko
 
 ## Kesimpulan Kelompok
 
-FoodGo memiliki beberapa masalah utama, yaitu asumsi bahwa jaringan selalu andal (Pitfall 1), komunikasi antarmodul yang masih bersifat blocking/synchronous (Pitfall 2), serta kurangnya isolasi kegagalan pada arsitektur monolitik (Pitfall 3). Ketika trafik meningkat, kombinasi komunikasi antarmodul tanpa timeout dan beban proses yang menumpuk pada satu server dapat membuat penggunaan CPU dan RAM meningkat dengan cepat (resource exhaustion). Kondisi ini kemudian dapat memicu cascading failure hingga akhirnya server mengalami crash dan harus di-restart secara manual.
+FoodGo memiliki beberapa masalah utama, yaitu asumsi bahwa jaringan selalu andal (Pitfall 2), komunikasi antarmodul yang masih bersifat blocking/synchronous (Pitfall 3), serta kurangnya isolasi kegagalan pada arsitektur monolitik (Pitfall 1). Ketika trafik meningkat, kombinasi komunikasi antarmodul tanpa timeout dan beban proses yang menumpuk pada satu server dapat membuat penggunaan CPU dan RAM meningkat dengan cepat (resource exhaustion). Kondisi ini kemudian dapat memicu cascading failure hingga akhirnya server mengalami crash dan harus di-restart secara manual.
 
 Untuk mengatasi masalah tersebut, secara garis besar arsitektur yang disarankan untuk FoodGo adalah:
 
