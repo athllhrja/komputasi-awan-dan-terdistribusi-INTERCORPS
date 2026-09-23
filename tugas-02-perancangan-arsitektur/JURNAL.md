@@ -5,8 +5,8 @@
 - Andi Athallah Radja : saya mempertibangkan untuk menggunakan arsitektur Pub-Sub karena dari hasil analisis sebelumnya ditemukan bahwa ada masalah pada modul pembayaran yang menunggu tanpa batas waktu dengan menggunakan Pub-sub masalah ini bisa dieliminasi karena penggunaan sistem Asynchronous Decoupling yang dimana nantinya akan ada decoupling space dan decoupling time yang membuat modul pemesanan tidak perlu tahu ip port atau api dari modul pembayaran yang dibutuhkan cuma alamat message broker
    
 - Kenapa akhirnya pilih [SOA/Pub-Sub]: ...
-- Revisi diagram (versi 1 → versi 2, apa yang berubah dan kenapa): ...
-  Draft Diagram 1 dari Andi Athallah radja
+- Revisi diagram 
+- Draft Diagram 1 dari Andi Athallah radja
   ```mermaid
   graph TD
       Client[Aplikasi Pelanggan] -->|HTTP Request| OrderSvc[Modul Pesanan]
