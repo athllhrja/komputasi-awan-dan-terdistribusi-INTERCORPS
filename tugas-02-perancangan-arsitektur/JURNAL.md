@@ -6,8 +6,8 @@
    
 - Kenapa akhirnya pilih [SOA/Pub-Sub]: ...
 - Revisi diagram (versi 1 → versi 2, apa yang berubah dan kenapa): ...
-- Draft Diagram 1 dari Andi Athallah radja
-- ```mermaid
+  Draft Diagram 1 dari Andi Athallah radja
+  ```mermaid
   graph TD
       Client[Aplikasi Pelanggan] -->|HTTP Request| OrderSvc[Modul Pesanan]
       
