@@ -25,7 +25,7 @@
       
       Broker -->|Subscribe Event:<br>FoodBeingPrepared| CourierSvc[Modul Kurir / Notifikasi]
   ```
-- Draft Diagram 1 revisi dari Calvin Immanuel Lado
+- Draft Diagram 2 revisi dari Calvin Immanuel Lado
   - PaymentSuccessful tidak langsung diteruskan ke Modul Katalog Resto, tetapi terlebih dahulu diterima Modul Pesanan.
   - Modul Pesanan menambahkan event baru OrderPaid.
   - Event FoodBeingPrepared diubah menjadi OrderReady.
