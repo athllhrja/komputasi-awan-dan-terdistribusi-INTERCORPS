@@ -5,7 +5,7 @@
 | Nama | NIM | Kontribusi |
 |---|---|---|
 | [ANDI ATHALLAH RADJA] | 103072400034 | Pemilihan Opsi Arsitektur, pembuatan alur skenario diagram, pengumpulan tugas pada git |
-| [KRISNA PUTRA WICAKSANA] | 103072400079 | Pemilihan Opsi Arsitektur, menggambarkan komponen dan interaksinya,  |
+| [KRISNA PUTRA WICAKSANA] | 103072400079 | Pemilihan Opsi Arsitektur, menggambarkan komponen dan interaksinya  |
 | [CALVIN IMMANUEL LADO] | 103072400158 | Pemilihan Opsi Arsitektur, Pembuatan dan menjelaskan alur skenario diagram |
 
 ## 23 September 2026
