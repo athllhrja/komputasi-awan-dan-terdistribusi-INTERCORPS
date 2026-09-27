@@ -8,29 +8,71 @@ Melanjutkan Tugas 1: FoodGo butuh sistem yang **decoupled** agar tim kurir dan t
 
 ## Tugas Kelompok
 
-1. Pilih **satu** gaya arsitektur utama: **Service-Oriented Architecture (SOA)** atau **Publish-Subscribe**. Boleh dikombinasikan (mis. SOA untuk service inti + Pub-Sub untuk notifikasi), tapi harus dijustifikasi kenapa kombinasi ini yang dipilih.
-2. Gambarkan minimal 4 komponen berikut dan interaksinya: modul Pesanan, modul Pembayaran, modul Kurir/Notifikasi, modul Katalog Resto (dan message broker/API gateway jika relevan).
-3. Jelaskan alur satu skenario penuh secara end-to-end di diagram (misalnya: pelanggan buat pesanan → bayar → resto terima notifikasi → kurir ditugaskan) — tunjukkan komponen mana berkomunikasi dengan siapa, dan **jenis komunikasinya** (sinkron/asinkron, request-response/event).
-4. Analisis tertulis: kenapa gaya ini mengatasi masalah *coupling* dari Tugas 1, dan apa trade-off-nya (mis. Pub-Sub menambah kompleksitas debugging karena alur tidak linear).
+## 1. Pilih **satu** gaya arsitektur utama: **Service-Oriented Architecture (SOA)** atau **Publish-Subscribe**. Boleh dikombinasikan (mis. SOA untuk service inti + Pub-Sub untuk notifikasi), tapi harus dijustifikasi kenapa kombinasi ini yang dipilih.
+Kombinasi: Service-Oriented Architecture (SOA) + Publish-Subscribe (Pub-Sub)
 
-## Cara Membuat Diagram (Gratis, Cukup Laptop)
+SOA berperan di level pemisahan modul/layanan: Pesanan, Pembayaran, Katalog Resto, dan Kurir/Notifikasi masing-masing menjadi service mandiri dengan tanggung jawab jelas, yang bisa di-deploy dan diskalakan secara terpisah (poin Calvin).
+Pub-Sub berperan di level komunikasi antar-layanan tersebut: seluruh interaksi setelah pesanan dibuat konfirmasi pembayaran, notifikasi ke resto, sampai penugasan kurir dilakukan lewat event yang dipublish dan disubscribe lewat message broker, bukan lewat pemanggilan API langsung. Ini menghasilkan decoupling space (modul tidak perlu tahu IP/port/API modul lain, cukup alamat broker) dan decoupling time (publisher dan subscriber tidak harus aktif bersamaan), yang langsung mengeliminasi masalah modul pembayaran yang bisa menunggu tanpa batas waktu pada Tugas 1 (poin Andi).
 
-Tidak perlu software berbayar. Dua opsi:
+Kenapa akhirnya kombinasi ini yang dipilih, bukan salah satunya saja: SOA saja belum cukup, karena walaupun modul sudah dipisah, kalau komunikasinya tetap sinkron dan langsung antar-service, satu modul masih bisa ikut terdampak ketika modul lain lambat atau down inilah persisnya masalah "menunggu tanpa batas waktu" yang ditemukan pada Tugas 1 (poin Krisna). Karena itu, di desain ini SOA sengaja hanya berperan di level pemisahan modul dan deployment, bukan di level protokol komunikasi tidak ada satu pun jalur RPC/API call sinkron antar-modul, termasuk untuk pembayaran. Kepastian hasil pembayaran tetap tercapai bukan lewat komunikasi sinkron, melainkan lewat urutan event yang eksplisit dan status yang selalu dikonfirmasi balik ke Modul Pesanan (OrderCreated → PaymentSuccessful → OrderPaid, lihat Poin 3). Dengan begitu, FoodGo tetap punya modul independen yang bisa di-deploy terpisah (dari SOA), sekaligus komunikasi antar-modulnya tidak saling terikat langsung karena berjalan lewat event di message broker (dari Pub-Sub) sehingga struktur layanan tetap teratur sekaligus coupling antar-modul, yang jadi masalah utama pada arsitektur monolitik sebelumnya, berkurang signifikan tanpa mengorbankan kepastian alur transaksi.
 
-**Opsi A — Mermaid di dalam Markdown (disarankan).** Ditulis sebagai teks biasa di `README.md`, otomatis dirender jadi diagram oleh GitHub — tidak perlu install apa pun.
+## 2. Gambarkan minimal 4 komponen berikut dan interaksinya: modul Pesanan, modul Pembayaran, modul Kurir/Notifikasi, modul Katalog Resto (dan message broker/API gateway jika relevan).
+1. Modul Pesanan (Order Service) : membuat pesanan dan mengelola status pesanan (dibuat, dibayar, selesai, kurir ditugaskan).
+2. Modul Pembayaran (Payment Service) : memproses pembayaran, mempublish hasilnya sebagai event.
+3. Modul Katalog Resto (Restaurant Service) : menerima info pesanan yang sudah dibayar, menyiapkan pesanan.
+4. Modul Kurir/Notifikasi (Courier Service) : menugaskan kurir setelah pesanan siap.
+5. Message Broker (mis. Kafka/RabbitMQ) : perantara seluruh event antar-modul; satu-satunya "alamat" yang perlu diketahui tiap modul.
 
-````markdown
+## 3. Jelaskan alur satu skenario penuh secara end-to-end di diagram (misalnya: pelanggan buat pesanan → bayar → resto terima notifikasi → kurir ditugaskan) - tunjukkan komponen mana berkomunikasi dengan siapa, dan **jenis komunikasinya** (sinkron/asinkron, request-response/event).
+Skenario: *pelanggan buat pesanan → bayar → resto terima notifikasi → kurir ditugaskan*.
+ 
+Diagram di bawah adalah **Diagram 2**, revisi dari Draft 1 (lihat `JURNAL.md` untuk histori revisinya). Kecuali request awal dari pelanggan, seluruh komunikasi antar-modul bersifat **asinkron lewat message broker (event/publish-subscribe)** tidak ada RPC/API call langsung antar-modul.
+ 
 ```mermaid
-graph LR
-  Client[Pelanggan] -->|HTTP request pesan| OrderSvc[Service Pesanan]
-  OrderSvc -->|RPC sinkron| PaymentSvc[Service Pembayaran]
-  OrderSvc -->|publish event OrderCreated| Broker[(Message Broker)]
-  Broker -->|subscribe| NotifSvc[Service Notifikasi Kurir]
-  Broker -->|subscribe| RestoSvc[Service Katalog Resto]
+graph TD
+    Client[Aplikasi Pelanggan] -->|1. HTTP Request sync| OrderSvc[Modul Pesanan]
+ 
+    Broker{Message Broker / Kafka}
+ 
+    OrderSvc -->|2. Publish async: OrderCreated| Broker
+    Broker -->|3. Subscribe async| PaySvc[Modul Pembayaran]
+    PaySvc -->|4. Publish async: PaymentSuccessful| Broker
+ 
+    Broker -->|5. Subscribe async| OrderSvc
+    OrderSvc -->|6. Publish async: OrderPaid| Broker
+ 
+    Broker -->|7. Subscribe async| RestoSvc[Modul Katalog Resto]
+    RestoSvc -->|8. Publish async: OrderReady| Broker
+ 
+    Broker -->|9. Subscribe async| CourierSvc[Modul Kurir / Notifikasi]
+    CourierSvc -->|10. Publish async: CourierAssigned| Broker
+ 
+    Broker -->|11. Subscribe async| OrderSvc
 ```
-````
+ 
+**Penjelasan urutan:**
+ 
+| # | Dari → Ke | Jenis komunikasi | Keterangan |
+|---|---|---|---|
+| 1 | Pelanggan → Modul Pesanan | Sinkron, request-response (HTTP) | Satu-satunya bagian sinkron di alur ini; pelanggan menunggu konfirmasi pesanan diterima |
+| 2-3 | Modul Pesanan → Broker → Modul Pembayaran | Asinkron, event (`OrderCreated`) | Modul Pesanan tidak perlu tahu IP/port/API Modul Pembayaran, cukup publish ke broker |
+| 4-5 | Modul Pembayaran → Broker → Modul Pesanan | Asinkron, event (`PaymentSuccessful`) | Modul Pesanan menerima kembali hasil bayar lewat event, bukan menunggu response langsung |
+| 6-7 | Modul Pesanan → Broker → Modul Katalog Resto | Asinkron, event (`OrderPaid`) | Resto baru diberi tahu setelah status "sudah dibayar" dikonfirmasi ulang oleh Modul Pesanan |
+| 8-9 | Modul Katalog Resto → Broker → Modul Kurir/Notifikasi | Asinkron, event (`OrderReady`) | Kurir baru dicari setelah makanan selesai disiapkan |
+| 10-11 | Modul Kurir/Notifikasi → Broker → Modul Pesanan | Asinkron, event (`CourierAssigned`) | Status kurir pada pesanan diperbarui setelah kurir ditugaskan |
 
-**Opsi B — draw.io / diagrams.net** (gratis, jalan di browser tanpa akun, atau app desktop offline di [app.diagrams.net](https://app.diagrams.net/)). Ekspor sebagai `.png` dan simpan di folder `diagram/`.
+## 4. Analisis tertulis: kenapa gaya ini mengatasi masalah *coupling* dari Tugas 1, dan apa trade-off-nya (mis. Pub-Sub menambah kompleksitas debugging karena alur tidak linear).
+- Bagaimana gaya ini mengatasi *coupling* dari Tugas 1
+- Pada monolit Tugas 1, semua modul berbagi satu proses/deploy, sehingga perubahan pada satu modul (mis. notifikasi kurir) memaksa seluruh aplikasi restart.
+- Masalah spesifik yang ditemukan sebelumnya **modul pembayaran bisa menunggu tanpa batas waktu** saat memanggil/dipanggil modul lain secara sinkron hilang karena semua komunikasi antar-modul sekarang lewat event asinkron. Modul Pesanan tidak lagi menunggu response langsung dari Modul Pembayaran; ia hanya publish `OrderCreated` dan lanjut memproses event `PaymentSuccessful` kapan pun event itu tiba.
+- Dengan **SOA**, tiap modul tetap punya batas tanggung jawab yang jelas dan bisa di-deploy terpisah tim resto bisa mengubah/deploy ulang Modul Katalog Resto tanpa menyentuh Modul Pembayaran.
+- Dengan **Pub-Sub**, terjadi *decoupling space* (modul tidak perlu tahu IP/port/API modul lain, cukup alamat broker) dan *decoupling time* (publisher dan subscriber tidak harus aktif bersamaan - event tetap tersimpan di broker jika salah satu modul sedang down/deploy).
+- Trade-off / kekurangan yang muncul
+1. **Kompleksitas debugging** Alur tidak lagi linear seperti pada SOA sinkron. Untuk melacak satu pesanan dari `OrderCreated` sampai `CourierAssigned`, tim perlu *correlation ID*/distributed tracing karena log tersebar di beberapa modul dan broker.
+2. **Eventual consistency** Ada jeda waktu antara satu event dipublish dan diproses oleh subscriber-nya. Status pesanan di Modul Pesanan bisa untuk sesaat belum mencerminkan kondisi terbaru (mis. pembayaran sudah sukses tapi status di Modul Pesanan belum ter-update).
+3. **Operasional tambahan** Message broker menjadi komponen baru yang harus dipelihara dan dipantau; jika broker sendiri bermasalah dan tidak di-setup dengan redundansi/clustering, ia bisa menjadi *single point of failure* yang baru ironisnya masalah yang ingin dihindari dari desain monolitik.
+4. **Penanganan pesan duplikat/tidak berurutan** Broker bisa mengirim event lebih dari sekali (*at-least-once delivery*) atau tidak berurutan, sehingga tiap modul subscriber harus didesain *idempotent* (mis. jangan sampai `CourierAssigned` diproses dua kali dan menugaskan dua kurir untuk satu pesanan).
+5. **Kurva belajar tim** Pola full-asinkron seperti ini lebih sulit dipahami dibanding SOA sinkron biasa dibutuhkan dokumentasi kontrak event yang baik (nama event, format payload, urutan yang diharapkan) agar semua anggota tim memahami alurnya.
 
 ## Struktur Submission
 
@@ -40,18 +82,3 @@ tugas-02-perancangan-arsitektur/
 ├── JURNAL.md
 └── diagram/            # File .png/.drawio jika pakai Opsi B
 ```
-
-## Rubrik Penilaian (Tugas 2)
-
-| Komponen | Bobot | Kriteria |
-|---|---|---|
-| Ketepatan pemilihan gaya arsitektur | 20% | Justifikasi SOA/Pub-Sub sesuai kebutuhan *decoupling* di skenario |
-| Kelengkapan & kejelasan diagram | 30% | Semua komponen kunci ada, jenis komunikasi (sinkron/asinkron) jelas ditandai |
-| Analisis trade-off | 30% | Bukan hanya kelebihan — kekurangan/kompleksitas baru juga dibahas |
-| Proses & kontribusi kelompok | 20% | `JURNAL.md`, commit history |
-
-## Batasan Penggunaan AI (Level 2)
-
-Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — lihat [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Boleh memakai AI untuk brainstorming komponen apa saja yang umum ada di gaya arsitektur SOA/Pub-Sub; **tidak boleh** meminta AI menggambar diagram final atau menuliskan analisis trade-off yang tinggal ditempel. Catat pemakaian AI di "Log Penggunaan AI" pada `JURNAL.md`.
-
-- Diagram Mermaid/draw.io yang "terlalu generik" (identik dengan contoh tutorial di internet tanpa penyesuaian ke kasus FoodGo) akan dinilai rendah pada komponen kelengkapan & kejelasan diagram.
