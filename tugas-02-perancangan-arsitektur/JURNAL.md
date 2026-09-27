@@ -28,30 +28,26 @@
   ```
 - Draft Diagram 1 revisi dari Calvin Immanuel Lado
 ```mermaid
-graph LR
-    Client["Client App (Mobile/Web)"] -->|HTTPS Request| GW["API Gateway / Reverse Proxy"]
-
-    subgraph SOA_Core ["SOA Core Services (Synchronous / Request-Response)"]
-        GW -->|Query Menu| RestoCatalog["Modul Katalog Resto"]
-        GW -->|Buat Pesanan| OrderService["Modul Pesanan"]
-        OrderService -->|Request Pembayaran| PaymentService["Modul Pembayaran"]
-    end
-
-    subgraph Event_Brokering ["Pub-Sub Messaging Layer (Asynchronous / Decoupled)"]
-        Broker["Message Broker <br/> (RabbitMQ / Kafka)"]
-
-        PaymentService -->|Publish:<br/>PaymentSuccessful| Broker
-        Broker -->|Consume:<br/>PaymentSuccessful| OrderService
-
-        OrderService -->|Publish:<br/>OrderPaid| Broker
-        Broker -->|Consume:<br/>OrderPaid| RestoCatalog
-
-        RestoCatalog -->|Publish:<br/>OrderReady| Broker
-        Broker -->|Consume:<br/>OrderReady| CourierService["Modul Kurir / Notifikasi"]
-
-        CourierService -->|Publish:<br/>CourierAssigned| Broker
-        Broker -->|Consume:<br/>CourierAssigned| OrderService
-    end
+graph TD
+    Client[Aplikasi Pelanggan] -->|HTTP Request| OrderSvc[Modul Pesanan]
+    
+    Broker{Message Broker / Kafka}
+    
+    OrderSvc -->|Publish Event Asinkron:<br>OrderCreated| Broker
+    
+    Broker -->|Subscribe Event:<br>OrderCreated| PaySvc[Modul Pembayaran]
+    PaySvc -->|Publish Event Asinkron:<br>PaymentSuccessful| Broker
+    
+    Broker -->|Subscribe Event:<br>PaymentSuccessful| OrderSvc
+    OrderSvc -->|Publish Event Asinkron:<br>OrderPaid| Broker
+    
+    Broker -->|Subscribe Event:<br>OrderPaid| RestoSvc[Modul Katalog Resto]
+    RestoSvc -->|Publish Event Asinkron:<br>OrderReady| Broker
+    
+    Broker -->|Subscribe Event:<br>OrderReady| CourierSvc[Modul Kurir / Notifikasi]
+    CourierSvc -->|Publish Event Asinkron:<br>CourierAssigned| Broker
+    
+    Broker -->|Subscribe Event:<br>CourierAssigned| OrderSvc
 ```
     
 
