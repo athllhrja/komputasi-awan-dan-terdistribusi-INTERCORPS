@@ -27,6 +27,12 @@
       Broker -->|Subscribe Event:<br>FoodBeingPrepared| CourierSvc[Modul Kurir / Notifikasi]
   ```
 - Draft Diagram 1 revisi dari Calvin Immanuel Lado
+  - PaymentSuccessful tidak langsung diteruskan ke Modul Katalog Resto, tetapi terlebih dahulu diterima Modul Pesanan.
+  - Modul Pesanan menambahkan event baru `OrderPaid`.
+  - Event `FoodBeingPrepared` diubah menjadi `OrderReady`.
+  - Ditambahkan event `CourierAssigned` dari Modul Kurir/Notifikasi.
+  - `CourierAssigned` diteruskan kembali ke Modul Pesanan agar status kurir dapat diperbarui.
+  - Revisi dilakukan agar alur lebih lengkap dan menunjukkan proses end-to-end sampai kurir ditugaskan.
 ```mermaid
 graph TD
     Client[Aplikasi Pelanggan] -->|HTTP Request| OrderSvc[Modul Pesanan]
@@ -49,6 +55,7 @@ graph TD
     
     Broker -->|Subscribe Event:<br>CourierAssigned| OrderSvc
 ```
+
     
 
 ## Log Penggunaan AI (Level 2)
