@@ -17,7 +17,6 @@
 - Kenapa akhirnya pilih SOA + Pub-Sub:
 Kombinasi ini dipilih karena SOA saja belum cukup mengatasi masalah walaupun modul sudah dipisah, jika komunikasinya tetap sinkron dan langsung antar-service, satu modul masih bisa ikut terdampak saat modul lain lambat atau down. Di sisi lain, Pub-Sub saja juga kurang tepat untuk semua proses, karena ada bagian yang tetap butuh kepastian urutan dan hasil, seperti pemesanan dan pembayaran. Dengan menggabungkan keduanya: SOA menjaga tiap modul FoodGo (Pesanan, Pembayaran, Katalog Resto, Kurir) tetap independen dan bisa di-deploy terpisah, sementara Pub-Sub menghilangkan ketergantungan langsung antar-modul (termasuk masalah modul pembayaran yang bisa menunggu tanpa batas waktu) dengan membuat seluruh alur pesanan berbasis event lewat message broker.
 
-- Revisi diagram 
 - Draft Diagram 1 dari Andi Athallah radja
   ```mermaid
   graph TD
