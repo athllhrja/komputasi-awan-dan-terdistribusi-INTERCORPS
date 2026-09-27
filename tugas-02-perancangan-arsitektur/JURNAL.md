@@ -6,7 +6,7 @@
 - Calvin Immanuel Lado: saya mempertimbangkan penggunaan gabungan antara arsitektur SOA dan model Pub-Sub. SOA digunakan untuk memisahkan modul utama FoodGo seperti modul pesanan, pembayaran, katalog restoran, dan kurir/notifikasi menjadi layanan yang mandiri. Dengan pemisahan tersebut, setiap layanan bisa dikembangkan dan dijalankan sendiri tanpa perlu menghentikan seluruh sistem. Pub-Sub digunakan untuk berkomunikasi secara asynchronous, khususnya untuk proses yang tidak membutuhkan jawaban langsung, seperti notifikasi pembayaran berhasil, pesanan diterima oleh restoran, makanan telah selesai dipersiapkan, dan kurir sudah ditugaskan.
    
 - Kenapa akhirnya pilih [SOA/Pub-Sub]:
-- Calvin Immanuel Lado: Saya memilih kombinasi SOA dan Pub-Sub karena masalah utama pada arsitektur FoodGo sebelumnya adalah tingginya coupling antar modul. Semua modul masih berada dalam satu aplikasi monolitik sehingga ketika salah satu modul diperbarui atau di-deploy ulang, modul lainnya juga ikut terdampak.
+
 - Revisi diagram 
 - Draft Diagram 1 dari Andi Athallah radja
   ```mermaid
