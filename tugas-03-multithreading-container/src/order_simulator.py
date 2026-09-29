@@ -17,7 +17,7 @@ NUM_WORKERS = 10        # jumlah thread pekerja
 processed_count = 0
 
 # TODO 1: Buat objek Lock di sini untuk melindungi `processed_count`.
-# lock = threading.Lock()
+lock = threading.Lock()
 
 
 def process_order(order_id: int) -> None:
@@ -33,7 +33,7 @@ def process_order(order_id: int) -> None:
     # Langkah 2: bungkus increment dengan `with lock:` dan buktikan hasilnya
     #            selalu tepat NUM_ORDERS. Simpan bukti kedua kondisi ini
     #            di JURNAL.md / folder bukti/.
-    pass
+    processed_count += 1
 
 
 def worker(order_ids: list) -> None:
@@ -45,11 +45,19 @@ def worker(order_ids: list) -> None:
 def main() -> None:
     order_ids = list(range(1, NUM_ORDERS + 1))
 
-    # TODO 3: Bagi `order_ids` menjadi NUM_WORKERS bagian, buat satu
-    # threading.Thread per bagian yang menjalankan `worker(...)`,
-    # start semua thread, lalu join semua thread sebelum lanjut.
+    # TODO 3: bagi order ke beberapa thread
     threads = []
-    # ... isi logika pembagian tugas & pembuatan thread di sini ...
+    chunk_size = (NUM_ORDERS + NUM_WORKERS - 1) // NUM_WORKERS
+
+    for i in range(NUM_WORKERS):
+        start = i * chunk_size
+        end = min(start + chunk_size, NUM_ORDERS)
+        if start >= NUM_ORDERS:
+            break
+        chunk = order_ids[start:end]
+        t = threading.Thread(target=worker, args=(chunk,))
+        threads.append(t)
+        t.start()
 
     for t in threads:
         t.join()
@@ -57,6 +65,8 @@ def main() -> None:
     print(f"Total pesanan diproses: {processed_count} (seharusnya {NUM_ORDERS})")
     if processed_count != NUM_ORDERS:
         print("RACE CONDITION TERDETEKSI - lengkapi TODO 1 & TODO 2 dengan Lock!")
+    else:
+        print("Semua pesanan berhasil diproses dengan benar (tidak ada race condition).")
 
 
 if __name__ == "__main__":
