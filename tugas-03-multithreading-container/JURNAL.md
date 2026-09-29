@@ -1,7 +1,9 @@
 # Jurnal Proses — Tugas 3
 
 ## Percobaan tanpa Lock
-- Hasil `processed_count` yang didapat: ...
+- Hasil `processed_count` yang didapat:
+-  Athallah Radja menjalankan program dengan perubahan TODO1, TODO2 dan TODO3
+-  semua enam kali RUN program menghasilkan processed_count = 100
 - Kenapa bisa meleset (jelaskan mekanisme race condition dengan kata sendiri): ...
 
 ## Percobaan dengan Lock
