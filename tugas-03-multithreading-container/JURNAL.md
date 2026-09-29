@@ -1,10 +1,13 @@
 # Jurnal Proses — Tugas 3
 
 ## Percobaan tanpa Lock
-- Hasil `processed_count` yang didapat:
--  Athallah Radja menjalankan program dengan perubahan TODO1, TODO2 dan TODO3
--  semua enam kali RUN program menghasilkan processed_count = 100
-- Kenapa bisa meleset (jelaskan mekanisme race condition dengan kata sendiri): ...
+- Hasil `processed_count` yang didapat: Athallah Radja menjalankan program dan hasilnya adalah semua enam kali RUN program menghasilkan processed_count = 100
+- Kenapa bisa meleset (jelaskan mekanisme race condition dengan kata sendiri:
+- Beberapa thread mengubah processed_count bersamaan tanpa Lock.
+  Operasi += 1 terdiri dari baca, tambah, tulis. Dua thread bisa
+  membaca nilai yang sama lalu saling menimpa, sehingga total
+  pesanan yang tercatat bisa kurang dari 100. Pada run kami dengan
+  100 order, gejala jarang muncul, tetapi risikonya tetap ada.
 
 ## Percobaan dengan Lock
 - Hasil `processed_count` setelah perbaikan: ...
