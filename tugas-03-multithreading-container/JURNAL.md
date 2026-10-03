@@ -22,7 +22,7 @@
   - Percobaan 5: 100
   - Percobaan 6: 100
 - Penggunaan Lock melindungi pembaruan counter sehingga thread tidak saling menimpa saat memperbarui nilainya.
-- Kesimpulan: pada enam percobaan dengan Lock, counter selalu menghasilkan 100 sesuai target 100 pesanan. Pada enam percobaan tanpa Lock dengan 100 pesanan dan 10 thread, counter hanya menghasilkan 37, 37, 39, 38, 38, dan 37, sehingga seluruh percobaan mengalami kehilangan penambahan counter. Lock lebih efektif menjaga ketepatan counter karena hanya satu thread dapat menjalankan bagian pembaruan counter pada satu waktu.  Hasil ini menunjukkan counter dengan Lock konsisten sesuai target, sedangkan versi tanpa Lock mengalami race condition. 
+- Kesimpulan: pada enam percobaan dengan Lock, counter selalu menghasilkan 100 sesuai target 100 pesanan. 
 
 ## Kendala Docker
 - Error yang ditemui saat `docker build`/`docker run` dan cara memperbaikinya: ...
