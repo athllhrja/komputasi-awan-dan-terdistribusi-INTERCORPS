@@ -12,17 +12,17 @@
 ## Percobaan dengan Lock
 - Penguji: Calvin Immanuel Lado.
 - File yang diuji: `src/order_simulator lock.py`.
-- Jumlah pesanan: 500.
+- Jumlah pesanan: 100.
 - Jumlah percobaan: 6 kali.
 - Hasil `processed_count` setelah perbaikan:
-  - Percobaan 1: 500
-  - Percobaan 2: 500
-  - Percobaan 3: 500
-  - Percobaan 4: 500
-  - Percobaan 5: 500
-  - Percobaan 6: 500
+  - Percobaan 1: 100
+  - Percobaan 2: 100
+  - Percobaan 3: 100
+  - Percobaan 4: 100
+  - Percobaan 5: 100
+  - Percobaan 6: 100
 - Penggunaan Lock melindungi pembaruan counter sehingga thread tidak saling menimpa saat memperbarui nilainya.
-- Kesimpulan: seluruh enam percobaan menghasilkan counter sesuai target, yaitu 500. Tidak ditemukan selisih counter pada pengujian ini.
+- Kesimpulan: pada enam percobaan dengan Lock, counter selalu menghasilkan 100 sesuai target 100 pesanan. Pada enam percobaan tanpa Lock dengan 100 pesanan dan 10 thread, counter hanya menghasilkan 37, 37, 39, 38, 38, dan 37, sehingga seluruh percobaan mengalami kehilangan penambahan counter. Lock lebih efektif menjaga ketepatan counter karena hanya satu thread dapat menjalankan bagian pembaruan counter pada satu waktu. Seluruh rangkaian membaca, menambah, dan menulis counter dilindungi sehingga thread berikutnya membaca nilai yang sudah diperbarui. Tanpa Lock, beberapa thread dapat membaca nilai yang sama lalu saling menimpa hasil penambahannya. Hasil ini menunjukkan counter dengan Lock konsisten sesuai target, sedangkan versi tanpa Lock mengalami race condition. Namun, jumlah pesanan kedua pengujian berbeda, yaitu 500 dan 100, sehingga diperlukan pengujian dengan jumlah pesanan dan thread yang sama untuk perbandingan yang setara.
 
 ## Kendala Docker
 - Error yang ditemui saat `docker build`/`docker run` dan cara memperbaikinya: ...
