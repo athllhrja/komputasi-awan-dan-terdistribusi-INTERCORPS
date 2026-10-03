@@ -10,7 +10,19 @@
   100 order, gejala jarang muncul, tetapi risikonya tetap ada.
 
 ## Percobaan dengan Lock
-- Hasil `processed_count` setelah perbaikan: ...
+- Penguji: Calvin Immanuel Lado.
+- File yang diuji: `src/order_simulator lock.py`.
+- Jumlah pesanan: 500.
+- Jumlah percobaan: 6 kali.
+- Hasil `processed_count` setelah perbaikan:
+  - Percobaan 1: 500
+  - Percobaan 2: 500
+  - Percobaan 3: 500
+  - Percobaan 4: 500
+  - Percobaan 5: 500
+  - Percobaan 6: 500
+- Penggunaan Lock melindungi pembaruan counter sehingga thread tidak saling menimpa saat memperbarui nilainya.
+- Kesimpulan: seluruh enam percobaan menghasilkan counter sesuai target, yaitu 500. Tidak ditemukan selisih counter pada pengujian ini.
 
 ## Kendala Docker
 - Error yang ditemui saat `docker build`/`docker run` dan cara memperbaikinya: ...
