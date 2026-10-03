@@ -1,39 +1,32 @@
 """
 Tugas 3 - Simulasi Pesanan Masuk dengan Multithreading
-
-Skeleton ini sengaja belum lengkap. Isi bagian bertanda TODO.
-Jangan mengubah nama fungsi (dipakai untuk pengecekan otomatis oleh asisten).
+Versi tanpa Lock: demonstrasi race condition.
 """
 
 import threading
 import random
 import time
 
-NUM_ORDERS = 100        # jumlah pesanan simulasi yang masuk
-NUM_WORKERS = 10        # jumlah thread pekerja
+NUM_ORDERS = 100
+NUM_WORKERS = 10
 
-# Counter bersama untuk menghitung total pesanan yang berhasil diproses.
-# Sengaja rawan race condition jika diakses tanpa proteksi.
 processed_count = 0
-
-# TODO 1: Buat objek Lock di sini untuk melindungi `processed_count`.
-lock = threading.Lock()
 
 
 def process_order(order_id: int) -> None:
     """Proses satu pesanan. Dipanggil oleh tiap thread pekerja."""
     global processed_count
 
-    # Simulasikan kerja nyata (mis. validasi, hitung total harga)
+    # Simulasi pekerjaan pesanan.
     time.sleep(random.uniform(0.001, 0.01))
 
-    # TODO 2: Tambahkan increment `processed_count` DI SINI.
-    # Langkah 1: jalankan dulu tanpa lock (increment biasa: processed_count += 1)
-    #            dan buktikan hasil akhirnya sering salah (< NUM_ORDERS).
-    # Langkah 2: bungkus increment dengan `with lock:` dan buktikan hasilnya
-    #            selalu tepat NUM_ORDERS. Simpan bukti kedua kondisi ini
-    #            di JURNAL.md / folder bukti/.
-    processed_count += 1
+    # Pisahkan baca dan tulis untuk demonstrasi race condition.
+    current_value = processed_count
+
+    # Sengaja beri kesempatan thread lain membaca nilai yang sama.
+    time.sleep(0.001)
+
+    processed_count = current_value + 1
 
 
 def worker(order_ids: list) -> None:
@@ -43,30 +36,46 @@ def worker(order_ids: list) -> None:
 
 
 def main() -> None:
-    order_ids = list(range(1, NUM_ORDERS + 1))
+    global processed_count
+    processed_count = 0
 
-    # TODO 3: bagi order ke beberapa thread
+    order_ids = list(range(1, NUM_ORDERS + 1))
     threads = []
+
     chunk_size = (NUM_ORDERS + NUM_WORKERS - 1) // NUM_WORKERS
 
     for i in range(NUM_WORKERS):
         start = i * chunk_size
         end = min(start + chunk_size, NUM_ORDERS)
+
         if start >= NUM_ORDERS:
             break
-        chunk = order_ids[start:end]
-        t = threading.Thread(target=worker, args=(chunk,))
-        threads.append(t)
-        t.start()
 
-    for t in threads:
-        t.join()
+        thread = threading.Thread(
+            target=worker,
+            args=(order_ids[start:end],),
+        )
+        threads.append(thread)
 
-    print(f"Total pesanan diproses: {processed_count} (seharusnya {NUM_ORDERS})")
+    # Jalankan semua thread sebelum menunggu penyelesaiannya.
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    print("Mode: TANPA LOCK")
+    print(f"Jumlah pesanan: {NUM_ORDERS}")
+    print(f"Jumlah thread: {len(threads)}")
+    print(
+        f"Total pesanan diproses: {processed_count} "
+        f"(seharusnya {NUM_ORDERS})"
+    )
+
     if processed_count != NUM_ORDERS:
-        print("RACE CONDITION TERDETEKSI - lengkapi TODO 1 & TODO 2 dengan Lock!")
+        print("RACE CONDITION TERDETEKSI: penambahan counter hilang.")
     else:
-        print("Semua pesanan berhasil diproses dengan benar (tidak ada race condition).")
+        print("Counter sesuai; race condition tidak tampak pada run ini.")
 
 
 if __name__ == "__main__":
