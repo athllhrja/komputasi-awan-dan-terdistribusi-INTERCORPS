@@ -128,19 +128,19 @@ Versi dengan Lock menghasilkan counter 100 pada seluruh enam percobaan. Hasil in
 
 Penggunaan Lock berfokus pada ketepatan data. Lock juga menimbulkan waktu tunggu ketika beberapa thread ingin memasuki critical section yang sama, sehingga penggunaannya perlu dibatasi pada bagian yang membutuhkan perlindungan.
 
-### 4. Alasan Memilih Threading Dibanding Multiprocessing
+### 4. Mengapa Menggunakan Threading Daripada Multiprocessing
 
-Masalah awal FoodGo adalah penggunaan proses OS baru untuk setiap permintaan pesanan, yang menambah beban sumber daya. Pada simulasi ini, 100 pesanan ditangani oleh 10 thread dalam satu proses.
+Masalah pertama FoodGo disebabkan oleh penggunaan proses OS baru untuk setiap pesanan yang diterima, yang pada gilirannya meningkatkan beban sumber daya. Ini adalah simulasi single-process, dengan 100 pesanan ditangani oleh 10 thread.
 
-Thread berbagi ruang memori dalam proses yang sama. Hal ini memudahkan penggunaan data bersama seperti `processed_count`, tetapi juga menimbulkan kebutuhan sinkronisasi agar pembaruannya tidak saling menimpa.
+Thread termasuk dalam proses yang sama dan berbagi ruang memori. Meskipun ini membuat data bersama seperti processed_count lebih mudah digunakan, hal ini juga menambah kebutuhan sinkronisasi agar pembaruan tidak saling menimpa.
 
-Simulasi pekerjaan menggunakan `time.sleep()` untuk mewakili waktu tunggu, seperti menunggu respons layanan atau operasi I/O. Threading sesuai untuk pola pekerjaan tersebut karena thread lain dapat melanjutkan pekerjaan ketika suatu thread menunggu.
+Simulasi pekerjaan menggunakan time. sleep() untuk menunjukkan bahwa diperlukan waktu tertentu, misalnya menunggu respons layanan atau eksekusi I/O. Threading sangat cocok untuk pola beban kerja seperti ini, karena thread lain dapat terus memproses sementara satu thread sedang memantau dan menunggu.
 
-Multiprocessing menggunakan proses terpisah. Penggabungan hasil atau penggunaan data bersama memerlukan mekanisme komunikasi antarproses atau shared memory. Untuk simulasi sederhana yang didominasi waktu tunggu ini, pendekatan tersebut menambah kebutuhan pengelolaan yang belum diperlukan.
+Multiprocessing menggunakan proses yang terpisah. Menggabungkan hasil atau bekerja dengan data yang sama memerlukan mekanisme komunikasi antarproses atau shared memory. Pendekatan ini menimbulkan overhead manajemen yang sebelumnya tidak ada, padahal hal yang akan disimulasikan dengan sederhana dan didominasi waktu tunggu.
 
-Multiprocessing tetap relevan untuk pekerjaan komputasi berat yang membutuhkan pemanfaatan beberapa inti CPU. Pada CPython dengan GIL aktif, eksekusi kode Python oleh thread dibatasi sehingga threading tidak otomatis mempercepat pekerjaan CPU-bound.
+Multiprocessing berguna untuk masalah yang berat secara komputasi, di mana beberapa inti CPU perlu digunakan. Pada CPython dengan GIL yang diberlakukan, eksekusi thread akan diserialkan saat menjalankan kode Python, sehingga threading tidak otomatis membantu pekerjaan yang terikat CPU agar berjalan lebih cepat.
 
-Pemilihan threading pada tugas ini didasarkan pada karakter simulasi dan tujuan menghindari pembuatan proses baru untuk setiap pesanan. Pengujian belum mengukur penggunaan memori maupun membandingkan waktu eksekusi dengan multiprocessing, sehingga besarnya penghematan sumber daya belum dapat dinyatakan secara kuantitatif.
+Threading dipilih karena sifat simulasi ini (tujuan di sini adalah menghindari pembuatan proses baru untuk setiap pesanan). Pengujian belum melacak penggunaan memori, juga belum menjalankan perbandingan pada waktu eksekusi terhadap multiprocessing, sehingga besarnya penghematan sumber daya tidak dapat dinyatakan dalam angka.
 
 ### 5. Pengujian di Dalam Docker
 
