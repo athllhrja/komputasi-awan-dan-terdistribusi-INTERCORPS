@@ -159,8 +159,8 @@ Hasil ini menunjukkan bahwa pengemasan aplikasi dalam Docker tidak menggantikan 
 
 ### 6. Kesimpulan
 
-Simulasi memperlihatkan bahwa penggunaan beberapa thread untuk memperbarui counter bersama memerlukan sinkronisasi. Setelah kesempatan terjadinya race condition diperjelas melalui jeda antara pembacaan dan penulisan, enam pengujian tanpa Lock menghasilkan counter 38–44 dari target 100.
+Terlihat bahwa, beberapa thread yang memperbarui counter bersama harus disinkronkan dalam simulasi. Ketika kejadian race condition diselidiki lebih lanjut dengan menambahkan penundaan yang lebih kecil antara proses membaca dan menulis, kemudian enam pengujian tanpa Lock menghasilkan nilai penghitung dari 38–44 alih-alih yang benar yaitu 100.
 
-Penggunaan `threading.Lock()` pada seluruh rangkaian pembaruan counter menghasilkan nilai 100 pada seluruh enam pengujian. Pengujian Docker juga mencatat hasil yang sesuai target pada versi dengan Lock.
+Menggunakan threading. Pada semua enam pengujian, nilai akhir adalah 100 ketika menggunakan Lock ()` pada seluruh rangkaian pembaruan penghitung. Hasil pengujian Docker yang juga sesuai dengan target dicatat pada versi yang mengaktifkan Lock.
 
-Threading sesuai dengan simulasi FoodGo yang banyak melibatkan waktu tunggu dan menggunakan sejumlah pekerja dalam satu proses. Lock melengkapi pendekatan tersebut dengan menjaga ketepatan pembaruan data bersama.
+Dalam hal ini, threading sangat cocok dengan simulasi FoodGo, di mana kami menggunakan sejumlah pekerja dalam satu proses, semuanya harus menunggu. Lock membangun pendekatan ini dengan jaminannya untuk pembaruan yang benar terhadap data bersama.
