@@ -2,12 +2,20 @@
 
 ## Percobaan tanpa Lock
 - Hasil `processed_count` yang didapat: Athallah Radja menjalankan program dan hasilnya adalah semua enam kali RUN program menghasilkan processed_count = 100
-- Kenapa bisa meleset (jelaskan mekanisme race condition dengan kata sendiri:
-- Beberapa thread mengubah processed_count bersamaan tanpa Lock.
+- Kenapa bisa meleset : Beberapa thread mengubah processed_count bersamaan tanpa Lock.
   Operasi += 1 terdiri dari baca, tambah, tulis. Dua thread bisa
   membaca nilai yang sama lalu saling menimpa, sehingga total
   pesanan yang tercatat bisa kurang dari 100. Pada run kami dengan
   100 order, gejala jarang muncul, tetapi risikonya tetap ada.
+
+- Hasil `processed_count` yang didapat setelah update code (dari calvin) : Athallah Radja Menjalankan Program dan mendapatkan
+  - Run 1: **41**
+  - Run 2: **41**
+  - Run 3: **42**
+  - Run 4: **38**
+  - Run 5: **43**
+  - Run 6: **44**
+- menjalankan program dan hasilnya adalah semua enam kali RUN program menghasilkan `processed_count` = **38–44** (selalu jauh di bawah 100).
 
 ## Percobaan dengan Lock
 - Penguji: Calvin Immanuel Lado.
