@@ -1,6 +1,7 @@
 # Jurnal Proses — Tugas 3
 
 ## Percobaan tanpa Lock
+
 - Hasil `processed_count` yang didapat: Athallah Radja menjalankan program dan hasilnya adalah semua enam kali RUN program menghasilkan processed_count = 100
 - Kenapa bisa meleset : Beberapa thread mengubah processed_count bersamaan tanpa Lock.
   Operasi += 1 terdiri dari baca, tambah, tulis. Dua thread bisa
@@ -18,6 +19,7 @@
 - menjalankan program dan hasilnya adalah semua enam kali RUN program menghasilkan `processed_count` = **38–44** (selalu jauh di bawah 100).
 
 ## Percobaan dengan Lock
+
 - Penguji: Calvin Immanuel Lado.
 - File yang diuji: `src/order_simulator lock.py`.
 - Jumlah pesanan: 100.
@@ -30,16 +32,37 @@
   - Percobaan 5: 100
   - Percobaan 6: 100
 - Penggunaan Lock melindungi pembaruan counter sehingga thread tidak saling menimpa saat memperbarui nilainya.
-- Kesimpulan: pada enam percobaan dengan Lock, counter selalu menghasilkan 100 sesuai target 100 pesanan. 
+- Kesimpulan: pada enam percobaan dengan Lock, counter selalu menghasilkan 100 sesuai target 100 pesanan.
+
+## Percobaan dengan Docker
+
+Penguji : Krisna Putra Wicaksana
+
+Pengujian dilakukan pada dua lingkungan, yaitu eksekusi Python secara langsung di laptop dan eksekusi menggunakan Docker container.
+
+| Lingkungan | Metode      | Counter Aktual | Counter Seharusnya |
+| ---------- | ----------- | -------------: | -----------------: |
+| Laptop     | Tanpa Lock  |             38 |                100 |
+| Laptop     | Dengan Lock |            100 |                100 |
+| Docker     | Tanpa Lock  |             38 |                100 |
+| Docker     | Dengan Lock |            100 |                100 |
+
+**Analisis:**
+Berdasarkan hasil pengujian, program tanpa Lock menghasilkan counter sebesar 38 dari 100 pesanan, baik saat dijalankan langsung di laptop maupun di dalam Docker container. Hal ini menunjukkan bahwa race condition tetap dapat terjadi ketika program dijalankan di lingkungan container.
+
+Setelah menggunakan `threading.Lock()`, kedua lingkungan pengujian menghasilkan counter sebesar 100 sesuai dengan jumlah pesanan yang ditentukan.
+
+Hasil tersebut menunjukkan bahwa penggunaan Lock berhasil mencegah terjadinya kehilangan pembaruan pada variabel counter. Selain itu, Docker mampu menjalankan program dengan perilaku yang sesuai dengan pengujian di lingkungan lokal.
 
 ## Kendala Docker
-- Error yang ditemui saat `docker build`/`docker run` dan cara memperbaikinya: ...
+
+- Tidak ada kendala pada saat install docker sampai dengan eksekusi
 
 ## Log Penggunaan AI (Level 2)
 
 > Wajib diisi sesuai kebijakan Level 2 di [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Tulis "Tidak memakai AI" pada baris pertama jika memang tidak dipakai. Hanya untuk brainstorming ide/outline — bukan untuk kode/analisis/teks akhir.
 
-| Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
-|---|---|---|---|---|
+| Tanggal    | Tool AI | Prompt yang diberikan                                                                                                                                                                                               | Ringkasan saran/ide AI                                                                                                                                                                                                                                                 | Bagaimana diolah jadi tulisan/kode sendiri                                                                                                                                                                                                                |
+| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 29-09-2026 | ChatGPT | Menanyakan apakah threading.Lock() tepat untuk TODO 1, apakah increment counter perlu dilakukan di process_order, cara menjalankan percobaan awal, mengapa hasilnya 0 lalu 100, dan apakah main() menggunakan lock. | Lock dibuat di TODO 1 dan digunakan untuk melindungi pembaruan counter di process_order. main() bertugas membagi pesanan dan mengelola thread. Hasil 0 menunjukkan pekerjaan belum berjalan; setelah thread dibuat, hasil 100 tercatat pada enam percobaan tanpa lock. | Saya memeriksa saran dengan membandingkannya terhadap instruksi tugas dan hasil program yang saya jalankan. Saya mengisi serta menjalankan kode sendiri, lalu mencatat hasil aktual—termasuk bahwa race condition tidak tampak pada percobaan tanpa lock. |
-| 29-09-2026 | ChatGPT | “Setelah mengganti TODO 3 dengan pembagian order ke beberapa thread, apakah hasilnya sudah benar?" | TODO 3 bertugas membagi daftar pesanan ke thread, memulai thread, lalu menunggu semuanya selesai. Hasil 100 menunjukkan semua pesanan terhitung, tetapi belum membuktikan race condition tanpa lock. | Saya membandingkan penjelasan dengan kode dan output program saya, lalu mencatat hasil percobaan tanpa lock apa adanya. |
+| 29-09-2026 | ChatGPT | “Setelah mengganti TODO 3 dengan pembagian order ke beberapa thread, apakah hasilnya sudah benar?"                                                                                                                  | TODO 3 bertugas membagi daftar pesanan ke thread, memulai thread, lalu menunggu semuanya selesai. Hasil 100 menunjukkan semua pesanan terhitung, tetapi belum membuktikan race condition tanpa lock.                                                                   | Saya membandingkan penjelasan dengan kode dan output program saya, lalu mencatat hasil percobaan tanpa lock apa adanya.                                                                                                                                   |
