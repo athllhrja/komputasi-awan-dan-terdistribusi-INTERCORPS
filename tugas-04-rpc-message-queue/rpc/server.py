@@ -11,26 +11,29 @@ saldo_user = {
     "user2": 120000,
 }
 
-
 def cek_saldo(user_id: str) -> float:
-    """Kembalikan saldo user_id saat ini."""
-    # TODO 1: kembalikan saldo dari dict `saldo_user`.
-    # Jika user_id tidak ada, putuskan sendiri perilakunya (mis. return 0 atau raise error)
-    # dan jelaskan keputusan ini di README.md.
-    pass
+    if user_id not in saldo_user:
+        return 0.0
+    return float(saldo_user[user_id])
 
 
 def proses_pembayaran(user_id: str, jumlah: float) -> dict:
-    """Kurangi saldo user sejumlah `jumlah`. Kembalikan status hasil."""
-    # TODO 2: validasi saldo cukup, kurangi saldo_user[user_id], dan kembalikan
-    # dict berisi minimal {"status": "sukses"/"gagal", "saldo_akhir": ...}
-    pass
+    if user_id not in saldo_user:
+        return {"status": "gagal", "saldo_akhir": 0, "pesan": "user tidak ditemukan"}
+    if saldo_user[user_id] < jumlah:
+        return {
+            "status": "gagal",
+            "saldo_akhir": saldo_user[user_id],
+            "pesan": "saldo tidak cukup",
+        }
+    saldo_user[user_id] -= jumlah
+    return {"status": "sukses", "saldo_akhir": saldo_user[user_id]}
 
 
 def main():
-    # TODO 3: buat SimpleXMLRPCServer di localhost port 8000,
-    # daftarkan fungsi cek_saldo & proses_pembayaran, lalu serve_forever().
-    server = SimpleXMLRPCServer(("localhost", 8000))
+    server = SimpleXMLRPCServer(("localhost", 8000), allow_none=True)
+    server.register_function(cek_saldo, "cek_saldo")
+    server.register_function(proses_pembayaran, "proses_pembayaran")
     print("RPC server modul Pembayaran berjalan di port 8000...")
     server.serve_forever()
 
