@@ -3,7 +3,7 @@
 ## Jalur yang dipilih
 - Athallah Radja : Saya memilih RPC karena pada kasus FoodGo, modul Pesanan membutuhkan jawaban langsung dari modul Pembayaran (cek saldo dan proses pembayaran). Operasi ini bersifat sinkron: hasil sukses/gagal harus diketahui sebelum alur pesanan dilanjutkan. RPC cocok karena client memanggil fungsi remote dan menunggu respons sebelum melanjutkan
 
-- // masukin komen ini nnti di readme yak : Athallah Radja : Saya memilih return 0.0 pada cek_saldo untuk user yang tidak ditemukan karena dalam konteks simulasi ini, client (modul Pesanan) cukup mengetahui bahwa saldo = 0, lalu client sendiri yang memutuskan apakah akan lanjut proses atau tidak. Alternatifnya adalah raise ValueError, namun itu akan menyebabkan client menerima exception yang harus di-handle secara eksplisit — terlalu ketat untuk simulasi awal ini.
+- // masukin komen ini nnti di readme yak : Athallah Radja : Saya memilih return 0.0 pada cek_saldo untuk user yang tidak ditemukan karena dalam konteks simulasi ini, client (modul Pesanan) cukup mengetahui bahwa saldo = 0, lalu client sendiri yang memutuskan apakah akan lanjut proses atau tidak.
 
 ## Kendala teknis
 - Error saat setup (mis. koneksi RabbitMQ ditolak, port bentrok): ...
