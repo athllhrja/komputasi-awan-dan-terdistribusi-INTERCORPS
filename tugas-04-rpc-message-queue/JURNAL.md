@@ -1,7 +1,7 @@
 # Jurnal Proses — Tugas 4
 
 ## Jalur yang dipilih
-- Athallah Radja Memilih untuk menggunakan RPC Alasan: dikarenakan kecepatan respon RPC itu sangat cepat dibandingkan dengan MQ maka untuk Case FoodGo ini saya memilih untuk Menggunakan metode RPC
+- Athallah Radja : Saya memilih RPC karena pada kasus FoodGo, modul Pesanan membutuhkan jawaban langsung dari modul Pembayaran (cek saldo dan proses pembayaran). Operasi ini bersifat sinkron: hasil sukses/gagal harus diketahui sebelum alur pesanan dilanjutkan. RPC cocok karena client memanggil fungsi remote dan menunggu respons sebelum melanjutkan
 
 ## Kendala teknis
 - Error saat setup (mis. koneksi RabbitMQ ditolak, port bentrok): ...
