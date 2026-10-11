@@ -73,3 +73,5 @@ tugas-04-rpc-message-queue/
 Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — lihat [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Boleh bertanya konsep umum RPC/message queue ke AI; **tidak boleh** meminta AI menuliskan isi `# TODO` di `rpc/server.py`, `rpc/client.py`, `mq/publisher.py`, atau `mq/consumer.py`. Catat pemakaian AI di "Log Penggunaan AI" pada `JURNAL.md`.
 
 - `JURNAL.md` wajib menjelaskan apa yang terjadi pada request RPC jika server mati di tengah proses (Jalur A), atau ke mana pesan "hilang sementara" tersimpan saat consumer mati (Jalur B) — jawaban generik/hafalan istilah tanpa mengaitkan ke hasil percobaan sendiri akan dinilai rendah.
+
+-Athallah Radja : Saya memilih return 0.0 pada cek_saldo untuk user yang tidak ditemukan karena dalam konteks simulasi ini, client (modul Pesanan) cukup mengetahui bahwa saldo = 0, lalu client sendiri yang memutuskan apakah akan lanjut proses atau tidak.
