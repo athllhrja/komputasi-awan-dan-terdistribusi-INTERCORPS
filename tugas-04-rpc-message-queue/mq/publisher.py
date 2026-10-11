@@ -36,14 +36,15 @@ def main():
             # TODO 3: publish `pesan` (di-encode json) ke QUEUE_NAME memakai
             # channel.basic_publish(...). Cetak log "Event terkirim: ..." setiap publish.
             channel.basic_publish(
-                    exchange="",
-                    routing_key=QUEUE_NAME,
-                    body=json.dumps(pesan).encode("utf-8"),
-                    properties=pika.BasicProperties(
-                        delivery_mode=2
-                    )
+                exchange="",
+                routing_key=QUEUE_NAME,
+                body=json.dumps(pesan).encode("utf-8"),
+                properties=pika.BasicProperties(
+                    delivery_mode=2
                 )
-            print(f"[TODO] Event belum benar-benar terkirim: {pesan}")
+            )
+            
+            print(f"Event terkirim: {pesan}")
             time.sleep(1)
 
     finally:
