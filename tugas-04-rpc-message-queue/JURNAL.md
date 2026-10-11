@@ -3,16 +3,18 @@
 ## Jalur yang dipilih
 
 - Athallah Radja : Saya memilih RPC karena pada kasus FoodGo, modul Pesanan membutuhkan jawaban langsung dari modul Pembayaran (cek saldo dan proses pembayaran). Operasi ini bersifat sinkron: hasil sukses/gagal harus diketahui sebelum alur pesanan dilanjutkan. RPC cocok karena client memanggil fungsi remote dan menunggu respons sebelum melanjutkan
+- Calvin Immanuel Lado : Saya memilih RPC karena proses pembayaran pada FoodGo membutuhkan jawaban langsung untuk menentukan apakah pesanan dapat dilanjutkan. Modul Pesanan harus menunggu hasil dari modul Pembayaran agar dapat mengetahui apakah transaksi berhasil atau gagal. RPC sesuai untuk kebutuhan ini karena client menunggu respons server sebelum melanjutkan proses berikutnya.
 
-- // masukin komen ini nnti di readme yak : Athallah Radja : Saya memilih return 0.0 pada cek_saldo untuk user yang tidak ditemukan karena dalam konteks simulasi ini, client (modul Pesanan) cukup mengetahui bahwa saldo = 0, lalu client sendiri yang memutuskan apakah akan lanjut proses atau tidak.
 
-Krisna Putra Wicaksana: Saya memilih Message Queue (MQ) untuk komunikasi antara modul Pembayaran dan modul Kurir/Notifikasi karena notifikasi pembayaran tidak harus diproses secara langsung. Dengan RabbitMQ, modul Pembayaran dapat mengirim event tanpa perlu menunggu modul Kurir menyelesaikan tugasnya. Jika consumer sedang tidak aktif, pesan dapat disimpan di antrean dan diproses kembali ketika consumer dijalankan. Hal ini membuat komunikasi antarmodul lebih fleksibel dan membantu menjaga responsivitas sistem FoodGo.
-
-Kesimpulan pemilihan jalur: Kelompok kami mengerjakan RPC dan Message Queue. RPC digunakan untuk operasi yang membutuhkan respons langsung, seperti pengecekan saldo dan proses pembayaran. Sementara itu, Message Queue digunakan untuk mengirim notifikasi pembayaran berhasil ke modul Kurir tanpa harus menunggu modul tersebut selesai memproses pesan.
 
 ## Kendala teknis
+- Error saat setup (mis. koneksi RabbitMQ ditolak, port bentrok): ...
+- Calvin Immanuel Lado : Ketika saya menekan Ctrl+C saat request diproses, client menerima Fault: KeyboardInterrupt, tetapi server tetap berjalan. Saya kemudian menggunakan Stop-Process melalui PowerShell untuk menghentikan server.
 
-- Krisna Putra Wicaksana: Saat menjalankan RabbitMQ, saya mengalami kendala karena Docker Engine belum aktif. Selain itu, program Python sempat mengalami error ModuleNotFoundError: No module named 'pika'. Kendala tersebut diatasi dengan menjalankan Docker Desktop dan menginstal library pika pada virtual environment.
+## Uji komunikasi sinkron dan server mati (Jalur A)
+
+- Calvin Immanuel Lado : Pembayaran berhasil ketika saldo mencukupi dan ditolak ketika saldo tidak cukup. Setelah fungsi cek_saldo diberi jeda 10 detik, waktu tunggu client menjadi sekitar 12 detik. Client baru melanjutkan pembayaran setelah menerima respons pengecekan saldo, sehingga terlihat bahwa pemanggilan RPC bersifat sinkron.
+- Saat server dimatikan ketika permintaan cek_saldo sedang diproses, client menerima ConnectionRefusedError: [WinError 10061]. Permintaan tersebut tidak menghasilkan respons saldo yang berhasil diterima client. Program client berhenti karena error belum ditangani, sehingga pemanggilan pembayaran berikutnya tidak dijalankan.
 
 ## Uji "pesan tidak hilang" (khusus Jalur B)
 
