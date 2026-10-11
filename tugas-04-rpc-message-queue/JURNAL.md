@@ -8,6 +8,11 @@
 
 ## Kendala teknis
 - Error saat setup (mis. koneksi RabbitMQ ditolak, port bentrok): ...
+- Calvin Immanuel Lado : Saat menghentikan server menggunakan Ctrl+C ketika request diproses, client menerima Fault: KeyboardInterrupt, tetapi server tetap berjalan. Saya mengatasinya dengan menggunakan Stop-Process untuk menghentikan server secara paksa.
+
+##Uji komunikasi sinkron dan server mati (Jalur A)
+
+-Calvin Immanuel Lado : Pembayaran sebesar Rp20.000 berhasil ketika saldo mencukupi dan ditolak ketika saldo tersisa Rp10.000. Setelah saya menambahkan jeda 10 detik pada fungsi cek_saldo, client menunggu respons sebelum melanjutkan pembayaran. Ketika server dimatikan saat pengecekan saldo berlangsung, client menerima ConnectionRefusedError dan tidak melanjutkan pembayaran. Hasil ini menunjukkan bahwa proses pada client bergantung pada respons server.
 
 ## Uji "pesan tidak hilang" (khusus Jalur B)
 - Langkah uji: matikan consumer → jalankan publisher → nyalakan consumer
