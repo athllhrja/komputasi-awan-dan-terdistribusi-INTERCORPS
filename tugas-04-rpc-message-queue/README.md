@@ -74,6 +74,6 @@ Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — li
 
 - `JURNAL.md` wajib menjelaskan apa yang terjadi pada request RPC jika server mati di tengah proses (Jalur A), atau ke mana pesan "hilang sementara" tersimpan saat consumer mati (Jalur B) — jawaban generik/hafalan istilah tanpa mengaitkan ke hasil percobaan sendiri akan dinilai rendah.
 
-### Penjelasan Implementasi RPC
+### Justifikasi & Penjelasan Implementasi RPC
 
 - Athallah Radja : Saya memilih `return 0.0` pada fungsi `cek_saldo` untuk user yang tidak ditemukan agar client menerima nilai saldo nol. Namun, pemeriksaan saldo saja belum membedakan user yang tidak ditemukan dengan user yang saldonya benar-benar nol. Karena itu, fungsi `proses_pembayaran` tetap memeriksa keberadaan user dan mengembalikan status gagal dengan pesan “user tidak ditemukan”.
