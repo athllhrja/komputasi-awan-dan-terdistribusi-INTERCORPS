@@ -26,6 +26,7 @@ class Node:
         self.peers = peers
         self.leader_id = None
         self.lock = threading.Lock()
+        self.got_ok = False
 
     # ---------- Infrastruktur jaringan (SUDAH LENGKAP, jangan diubah) ----------
 
