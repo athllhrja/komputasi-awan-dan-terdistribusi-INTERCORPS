@@ -174,7 +174,19 @@ class Node:
         # ke SEMUA peer (bukan cuma yang lebih tinggi).
         with self.lock:
             self.leader_id = self.node_id
-        print(f"[Node {self.node_id}] TODO: broadcast COORDINATOR, saya jadi leader")
+        print(f"[Node {self.node_id}] Saya menjadi leader. Broadcast COORDINATOR...")
+
+        for peer_id, peer_port in self.peers.items():
+            if self.send_message(peer_port, "COORDINATOR"):
+                print(
+                    f"[Node {self.node_id}] "
+                    f"Mengirim COORDINATOR ke node {peer_id}"
+                )
+            else:
+                print(
+                    f"[Node {self.node_id}] "
+                    f"Node {peer_id} tidak dapat dihubungi"
+                )
 
     def monitor_leader(self):
         """Loop periodik: cek apakah leader masih hidup, trigger election jika mati."""
@@ -184,6 +196,51 @@ class Node:
             # (mis. kirim pesan "PING" atau cukup coba connect). Jika gagal
             # (leader mati) dan node ini belum tahu leader baru, panggil
             # start_election().
+            with self.lock:
+                current_leader = self.leader_id
+                election_active = self.election_in_progress
+
+             # proses election yang berjalan.
+            if current_leader is None:
+                if not election_active:
+                    self.start_election()
+                continue
+
+            # Node tidak perlu memantau dirinya sendiri.
+            if current_leader == self.node_id:
+                continue
+
+            # Cari port milik leader saat ini.
+            leader_port = self.peers.get(current_leader)
+
+            if leader_port is None:
+                continue
+
+            # Coba hubungi leader.
+            if not self.send_message(leader_port, "PING"):
+                print(
+                    f"[Node {self.node_id}] "
+                    f"Leader node {current_leader} tidak merespons!"
+                )
+
+                with self.lock:
+                    # Pastikan leader belum berubah dan election
+                    # belum dimulai oleh thread lain.
+                    if (
+                        self.leader_id == current_leader
+                        and not self.election_in_progress
+                    ):
+                        self.leader_id = None
+                        should_elect = True
+                    else:
+                        should_elect = False
+
+                if should_elect:
+                    print(
+                        f"[Node {self.node_id}] "
+                        "Memulai election ulang..."
+                    )
+                    self.start_election()
             pass
 
 
