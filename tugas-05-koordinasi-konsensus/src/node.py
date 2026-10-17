@@ -59,31 +59,42 @@ class Node:
     # ---------- Logika Bully Algorithm (LENGKAPI BAGIAN INI) ----------
 
     def on_message(self, sender_id: int, msg_type: str):
-        """Dipanggil setiap kali node ini menerima pesan dari node lain."""
-        print(f"[Node {self.node_id}] Menerima pesan '{msg_type}' dari node {sender_id}")
-        # TODO 1: tangani tiga jenis pesan berikut:
-        #   - "ELECTION": node lain memulai election. Jika node_id kita LEBIH BESAR
+        """Menangani pesan yang diterima dari node lain."""
+        print(
+            f"[Node {self.node_id}] "
+            f"Menerima '{msg_type}' dari node {sender_id}"
+        )
+
         if msg_type == "ELECTION":
+            # Balas jika ID kita lebih tinggi daripada pengirim.
             if self.node_id > sender_id:
-            target_port = self.peers.get(sender_id)
-        #     dari sender_id, balas dengan mengirim "OK" ke sender, lalu mulai
-            if target_port is not None:
-                self.send_message(target_port, "OK")
-                print(f"[Node {self.node_id}] Mengirim OK ke node {sender_id}")
-        #     election kita sendiri (start_election()) karena kita berpotensi jadi leader.
-            self.start_election()
-        #   - "OK": tandai bahwa ada node lebih tinggi yang masih hidup, sehingga
-        #     kita TIDAK boleh mendeklarasikan diri sebagai leader.
-         elif msg_type == "OK":
-            with self.lock:
-                self.got_ok = True
-        print(f"[Node {self.node_id}] Menerima OK dari node {sender_id}")
-        #   - "COORDINATOR": simpan sender_id sebagai leader_id yang baru.
+                target_port = self.peers.get(sender_id)
+
+                if target_port is not None:
+                    if self.send_message(target_port, "OK"):
+                        print(
+                            f"[Node {self.node_id}] "
+                            f"Mengirim OK ke node {sender_id}"
+                        )
+
+                # Mulai election sendiri karena berpotensi jadi leader.
+                self.start_election()
+
+        elif msg_type == "OK":
+            # Ada node dengan ID lebih tinggi yang masih aktif.
+            if sender_id > self.node_id:
+                with self.lock:
+                    self.got_ok = True
+
         elif msg_type == "COORDINATOR":
+            # Catat pengirim sebagai leader baru.
             with self.lock:
-            self.leader_id = sender_id
-        print(f"[Node {self.node_id}] Leader sekarang: node {sender_id}")
-        #print(f"[Node {self.node_id}] Menerima pesan '{msg_type}' dari node {sender_id} (TODO: proses ini)")
+                self.leader_id = sender_id
+
+            print(
+                f"[Node {self.node_id}] "
+                f"Leader sekarang: node {sender_id}"
+            )
     
     def start_election(self):
         """Dipanggil saat node ini mendeteksi leader tidak ada / tidak merespons."""
