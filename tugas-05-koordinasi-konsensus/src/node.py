@@ -27,6 +27,7 @@ class Node:
         self.leader_id = None
         self.lock = threading.Lock()
         self.got_ok = False
+        self.election_in_progress = False
 
     # ---------- Infrastruktur jaringan (SUDAH LENGKAP, jangan diubah) ----------
 
