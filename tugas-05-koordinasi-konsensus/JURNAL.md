@@ -1,15 +1,17 @@
 # Jurnal Proses — Tugas 5
 
 ## Implementasi Bully
-- Kendala saat mengisi TODO 1-4: Tidak ada kendala yang berarti selama proses implementasi. Setiap bagian dilengkapi sesuai fungsi masing-masing, mulai dari pengiriman pesan election, penentuan leader, hingga pemantauan kondisi leader.
+- Kendala saat mengisi TODO 1-4: Proses pengisian TODO 1–4 berjalan relatif lancar. Bagian yang membutuhkan perhatian lebih adalah pengelolaan kondisi race saat beberapa node memulai election secara bersamaan, serta penggunaan lock agar tidak terjadi election ganda pada node yang sama. 
+Pemahaman alur Bully Algorithm (pengiriman ELECTION ke ID lebih tinggi, balasan OK, dan broadcast COORDINATOR) membantu memastikan logika pada `on_message`, `start_election`, `declare_leader`, dan `monitor_leader` berjalan sesuai spesifikasi.
 
 ## Skenario 1: Start normal
 - Leader yang terpilih: Node 5.
-- Log/observasi: Kelima node dijalankan melalui proses Python yang terpisah dengan port masing-masing. Node melakukan proses election dan node 5 terpilih sebagai leader karena memiliki ID tertinggi. Node lain menerima pesan `COORDINATOR` untuk mengetahui leader yang sedang aktif.
+- Log/observasi: Kelima node dijalankan pada proses terpisah. Karena waktu start hampir bersamaan, terjadi beberapa kali pesan “tidak dapat dihubungi” di awal. Node dengan ID lebih rendah sempat menyatakan diri sebagai leader sementara, namun setelah menerima pesan `COORDINATOR` dari node yang lebih tinggi, semua node akhirnya menyepakati Node 5 sebagai leader (ID tertinggi). Node 5 kemudian terus menerima PING dari node lain sebagai tanda monitoring aktif.
 
 ## Skenario 2: Leader dimatikan
 - Leader baru yang terpilih: Node 4.
-- Berapa lama waktu sampai leader baru terdeteksi:  Sekitar beberapa detik setelah node 5 dimatikan, menyesuaikan interval pemantauan leader dan waktu proses election. Waktu pastinya dicatat berdasarkan hasil pengujian.
+- Waktu deteksi: Sekitar 3–5 detik setelah Node 5 dimatikan (sesuai interval monitoring 3 detik + timeout election 2 detik).
+- Log/observasi: Setelah Node 5 tidak merespons PING, node-node lain mendeteksi kegagalan leader dan memulai election ulang. Node 4 (ID tertinggi yang masih hidup) berhasil menjadi leader baru dan menyebarkan pesan `COORDINATOR`. Node 1, 2, dan 3 menerima OK dari node yang lebih tinggi, kemudian memperbarui leader menjadi Node 4.
 
 ## Log Penggunaan AI (Level 2)
 
