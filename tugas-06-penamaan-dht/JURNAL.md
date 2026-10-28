@@ -1,5 +1,14 @@
 # Jurnal Proses — Tugas 6
 
+**Kelompok:** [INTERCOROPS]
+
+| Nama | NIM | Kontribusi |
+|---|---|---|
+| ANDI ATHALLAH RADJA | 103072400034 | Mengimplementasikan fungsi Chord DHT pada chord_simulation.py, menjalankan simulasi, serta menganalisis hasil pengujian. |
+| KRISNA PUTRA WICAKSANA | 103072400079 | Menganalisis hasil simulasi dan menyusun jawaban tiga pertanyaan analisis pada README.md berdasarkan output program. |
+| CALVIN IMMANUEL LADO | 103072400158 | [Latency Is Zero] |
+
+
 ## Implementasi find_successor
 - Kesalahan pertama yang ditemui: lupa menangani kasus wrap-around (ketika tidak ada node dengan ID ≥ key_hash, harus kembali ke node dengan ID terkecil).
 - Cara memperbaikinya: setelah mengurutkan daftar node, lakukan iterasi mencari ID terkecil yang ≥ key_hash; jika tidak ketemu, kembalikan `sorted_nodes[0]`.
