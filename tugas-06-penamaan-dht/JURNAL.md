@@ -6,7 +6,7 @@
 | ---------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | ANDI ATHALLAH RADJA    | 103072400034 | Mengimplementasikan fungsi Chord DHT pada chord_simulation.py, menjalankan simulasi, serta menganalisis hasil pengujian. |
 | KRISNA PUTRA WICAKSANA | 103072400079 | Menganalisis hasil simulasi dan menyusun jawaban tiga pertanyaan analisis pada README.md berdasarkan output program.     |
-| CALVIN IMMANUEL LADO   | 103072400158 | [Latency Is Zero]                                                                                                        |
+| CALVIN IMMANUEL LADO   | 103072400158 |  Mengkaji hasil analisis dan simulasi Chord DHT, mengaitkan perubahan tanggung jawab mapping pada skenario join/leave dengan kebutuhan FoodGo, serta merumuskan kesimpulan dan keterbatasan simulasi dalam JURNAL.md. |                                                                                                      |
 
 ## Implementasi find_successor
 
