@@ -2,6 +2,12 @@
 
 **Kelompok:** [INTERCOROPS]
 
+| Nama                   | NIM          |                                                                                                       
+| ---------------------- | ------------ | 
+| ANDI ATHALLAH RADJA    | 103072400034 | 
+| KRISNA PUTRA WICAKSANA | 103072400079 | 
+| CALVIN IMMANUEL LADO   | 103072400158 | 
+
 ## Implementasi find_successor
 
 - Kesalahan pertama yang ditemui: lupa menangani kasus wrap-around (ketika tidak ada node dengan ID ≥ key_hash, harus kembali ke node dengan ID terkecil).
@@ -40,5 +46,5 @@ Tanpa penyesuaian ini, kurir awal (hash 28, 50, 132) tidak jatuh di rentang yang
 
 | Tanggal | Tool AI | Prompt yang diberikan | Ringkasan saran/ide AI | Bagaimana diolah jadi tulisan/kode sendiri |
 |---|---|---|---|---|
-| 23-10-2026 | ChatGPT | Meminta peninjauan kode Chord, membandingkan dua versi main(), menanyakan arti output perpindahan tanggung jawab, serta apakah perubahan perlu dicatat di README dan JURNAL | main() yang hanya mendaftarkan kurir dengan hash 28, 50, dan 132 tidak memperlihatkan perpindahan saat topologi berubah. Skenario yang menambahkan hash 116, 122, 170, dan 175 memperlihatkan perpindahan tanggung jawab saat node bergabung dan keluar. IP kurir tetap sama; node penanggung jawabnya yang berubah | Saya membandingkan penjelasan dengan kode dan output yang saya jalankan. Saya memakai hasil aktual untuk memahami skenario, lalu menulis catatan README/JURNAL dengan kata-kata sendiri |
+| 28-10-2026 | ChatGPT | Meminta peninjauan kode Chord, membandingkan dua versi main(), menanyakan arti output perpindahan tanggung jawab, serta apakah perubahan perlu dicatat di README dan JURNAL | main() yang hanya mendaftarkan kurir dengan hash 28, 50, dan 132 tidak memperlihatkan perpindahan saat topologi berubah. Skenario yang menambahkan hash 116, 122, 170, dan 175 memperlihatkan perpindahan tanggung jawab saat node bergabung dan keluar. IP kurir tetap sama; node penanggung jawabnya yang berubah | Saya membandingkan penjelasan dengan kode dan output yang saya jalankan. Saya memakai hasil aktual untuk memahami skenario, lalu menulis catatan README/JURNAL dengan kata-kata sendiri |
 | 01-11-2026 | ChatGPT | MMendiskusikan konsep DHT/Chord, perbandingannya dengan metode penamaan lain, serta mekanisme perubahan mapping ketika terjadi perubahan topologi. | Memberikan gambaran mengenai perbedaan Flat Naming, DNS, dan DHT/Chord, serta hubungan antara successor, ring topology, dan perpindahan data saat node bergabung atau keluar. | Saya mempelajari kembali konsep yang dijelaskan dan mencocokkannya dengan hasil simulasi program. Penjelasan kemudian disesuaikan dengan implementasi dan hasil pengujian kelompok. |
