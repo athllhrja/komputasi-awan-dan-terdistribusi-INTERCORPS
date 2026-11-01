@@ -6,6 +6,14 @@
 
 Pelanggan FoodGo kesulitan menemukan alamat IP server kurir yang **dinamis** (kurir berpindah lokasi/jaringan, IP-nya sering berubah). FoodGo butuh cara memetakan **ID Kurir** (identitas tetap) ke **alamat IP terkininya** tanpa server pusat tunggal yang jadi bottleneck/single point of failure.
 
+**Kelompok:** INTERCORPS
+
+| Nama | NIM |
+| --- | --- |
+| Andi Athallah Radja | 103072400034 |
+| Krisna Putra Wicaksana | 103072400079 |
+| Calvin Immanuel Lado | 103072400158 |
+
 ### Analisis
 
 ## 1. Alasan Penggunaan DHT/Chord
@@ -54,25 +62,39 @@ flowchart LR
     N123 --> N136
     N136 --> N40
 ```
-## 3. Perubahan Mapping Ketika Node Keluar
+## 3. Penelusuran manual lookup("kurir-012")
 
-Ketika node node-jakarta-1 dengan ID 177 keluar dari ring, data kurir yang sebelumnya menjadi tanggung jawab node tersebut harus dialihkan ke successor berikutnya.
+Penelusuran ini memakai keadaan setelah node-medan-1 bergabung dan sebelum node-jakarta-1 keluar. Node terurut: 40, 102, 123, 136, 177.
+  1. lookup("kurir-012") menghitung key_hash = hash_id("kurir-012"). Hasilnya 116.
+  2. Program memeriksa self.data. Entri 116 ada, isinya ("kurir-012", "192.168.1.20").
+  3. find_successor(116) mengurutkan ID node, lalu mencari ID terkecil yang ≥ 116.
+  4. Pemeriksaan berurutan: 40 lebih kecil, 102 lebih kecil, 123 ≥ 116. Pencarian berhenti.
+  5. Node 123 adalah node-medan-1. Fungsi mengembalikan 192.168.1.20
 
-Berdasarkan hasil simulasi, sebelum node keluar terdapat dua data kurir yang disimpan pada node 177:
+Sebelum Medan ada, urutan node hanya 40, 102, 136, 177. ID terkecil yang ≥ 116 adalah 136, sehingga kurir ini tersimpan di Surabaya. Setelah node 123 masuk, successor berubah, tetapi IP kurir tidak berubah. Output program sesuai dengan langkah ini:
+-> Data 'kurir-012' (hash=116) pindah dari node 136 ke node 123
+[LOOKUP] 'kurir-012' (hash=116) ditemukan di node 123
+kurir-012 -> 192.168.1.20
 
-- kurir-005 (hash=175)
-- kurir-009 (hash=170)
-  Setelah node 177 keluar, kedua data tersebut berpindah ke node Bandung dengan ID 40.
+## 4. Perubahan mapping saat node keluar
 
-Hal ini terjadi karena node 40 menjadi successor berikutnya dalam ring melalui mekanisme wrap-around.
+leave() terlebih dahulu mengumpulkan key yang successor-nya sama dengan node yang akan keluar. Baru setelah itu node dihapus dari ring. Key yang bukan milik node itu tidak dicatat sebagai pindah.
 
-bukti output:
---- Sebuah node keluar ---
+node-jakarta-1 (ID 177) keluar saat ring masih [40, 102, 123, 136, 177]. Node 177 bertanggung jawab atas hash yang lebih besar dari 136 sampai 177, yaitu:
+- kurir-009, hash 170
+- kurir-005, hash 175
+
+Setelah node 177 dihapus, ring menjadi [40, 102, 123, 136]. Untuk hash 170 dan 175 tidak ada node dengan ID ≥ hash tersebut, sehingga find_successor melakukan wrap-around ke node terkecil, yaitu 40.
+
 [LEAVE] Node 'node-jakarta-1' (id=177) keluar dari ring
--> Data 'kurir-005' (hash=175) pindah dari node 177 ke node 40
--> Data 'kurir-009' (hash=170) pindah dari node 177 ke node 40
+  -> Data 'kurir-005' (hash=175) pindah dari node 177 ke node 40
+  -> Data 'kurir-009' (hash=170) pindah dari node 177 ke node 40
+  [LOOKUP] 'kurir-005' (hash=175) ditemukan di node 40
+kurir-005 -> 192.168.1.30
+  [LOOKUP] 'kurir-009' (hash=170) ditemukan di node 40
+kurir-009 -> 192.168.1.31
 
-Hasil tersebut menunjukkan bahwa sistem tetap dapat menemukan data kurir meskipun salah satu node keluar dari ring. Perubahan ini tidak mengharuskan seluruh data dipindahkan, melainkan hanya data yang sebelumnya menjadi tanggung jawab node yang keluar.
+IP kurir tetap sama. Yang berubah hanya node penyimpan mapping, dan lookup setelah leave tetap berhasil. Simulasi berjalan dalam satu proses, jadi kegagalan node mendadak di jaringan sungguhan belum diuji.
 
 ## Kesimpulan Analisis
 
