@@ -93,6 +93,10 @@ bukti output:
 
 Hasil tersebut menunjukkan bahwa sistem tetap dapat menemukan data kurir meskipun salah satu node keluar dari ring. Perubahan ini tidak mengharuskan seluruh data dipindahkan, melainkan hanya data yang sebelumnya menjadi tanggung jawab node yang keluar.
 
+## Kesimpulan Analisis
+
+Berdasarkan hasil simulasi, Chord DHT dapat menentukan node penanggung jawab mapping ID kurir ke alamat IP melalui consistent hashing dan pencarian successor. Pendekatan ini mendukung kebutuhan FoodGo untuk membagi tanggung jawab pengelolaan mapping ke beberapa node, dengan pembaruan mapping tetap diperlukan ketika IP kurir berubah. Ketika node 123 bergabung, mapping dengan hash 116 dan 122 beralih dari node 136 ke node 123. Ketika node 177 keluar, mapping dengan hash 170 dan 175 beralih ke node 40 melalui wrap-around. Hasil ini menunjukkan bahwa perubahan topologi hanya memengaruhi sebagian mapping, sementara alamat IP kurir tetap sama dalam skenario pengujian. Dengan demikian simulasi telah menunjukkan mekanisme dasar lookup, join, dan leave.
+
 ## Log Penggunaan AI (Level 2)
 
 > Wajib diisi sesuai kebijakan Level 2 di [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Tulis "Tidak memakai AI" pada baris pertama jika memang tidak dipakai. Hanya untuk brainstorming ide/outline — bukan untuk kode/analisis/teks akhir.
