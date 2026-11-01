@@ -1,26 +1,21 @@
 # Jurnal Proses — Tugas 6
 
-**Kelompok:** [INTERCOROPS]
-
-| Nama                   | NIM          |                                                                                                       
-| ---------------------- | ------------ | 
-| ANDI ATHALLAH RADJA    | 103072400034 | 
-| KRISNA PUTRA WICAKSANA | 103072400079 | 
-| CALVIN IMMANUEL LADO   | 103072400158 | 
-
 ## Implementasi find_successor
 
 - Kesalahan pertama yang ditemui: lupa menangani kasus wrap-around (ketika tidak ada node dengan ID ≥ key_hash, harus kembali ke node dengan ID terkecil).
 - Cara memperbaikinya: setelah mengurutkan daftar node, lakukan iterasi mencari ID terkecil yang ≥ key_hash; jika tidak ketemu, kembalikan `sorted_nodes[0]`.
-
+- Pemeriksaan: hash 175 dan 170, yang sebelumnya dipegang node 177, setelah node itu keluar ditemukan di node 40. Hasil ini sesuai dengan aturan wrap-around.
+- 
 ### Penyesuaian main()
 
-Skenario `main()` diubah dengan mendaftarkan kurir tambahan yang hash-nya berada pada rentang terdampak, supaya perpindahan tanggung jawab saat join dan leave terlihat di output:
+`main()` awal hanya mendaftarkan `kurir-001` (hash 50), `kurir-002` (hash 28), dan `kurir-003` (hash 132). Ketiganya tidak masuk rentang yang berubah saat `node-medan-1` bergabung atau `node-jakarta-1` keluar, sehingga log perpindahan tidak muncul walaupun algoritmanya sudah benar.
 
-- `kurir-012` (hash=116) dan `kurir-088` (hash=122) → rentang (102, 123] → terdampak join node-medan-1 (id=123)
-- `kurir-005` (hash=175) dan `kurir-009` (hash=170) → rentang (136, 177] → terdampak leave node-jakarta-1 (id=177)
+Kurir tambahan didaftarkan agar perpindahan terlihat:
 
-Tanpa penyesuaian ini, kurir awal (hash 28, 50, 132) tidak jatuh di rentang yang berubah, sehingga log perpindahan tidak muncul meskipun algoritma sudah benar.
+- `kurir-012` (hash 116) dan `kurir-088` (hash 122) berada pada rentang (102, 123], sehingga terdampak join `node-medan-1`.
+- `kurir-005` (hash 175) dan `kurir-009` (hash 170) berada pada rentang (136, 177], sehingga terdampak leave `node-jakarta-1`.
+
+Pemindahan yang dicatat program adalah perubahan tanggung jawab lewat `find_successor()`, bukan penyalinan data fisik antar proses. `self.data` tetap satu kamus pada simulasi satu proses ini.
 
 ## Skenario join/leave
 
