@@ -25,6 +25,68 @@ Dalam simulasi, setiap pembaruan saldo diberi nomor versi. Aplikasi atau sesi pe
 2. Jika versi Bandung **lebih kecil**, sistem tidak menggunakan data lamanya dan mengalihkan pembacaan ke Jakarta, yaitu replika yang telah menerima top-up.
 3. Setelah replikasi selesai, Bandung dapat kembali melayani pembacaan langsung karena versinya sudah memenuhi syarat.
 
+## 3. Sequence Diagram
+
+### 3.1 Tanpa Read-Your-Writes (Bug)
+
+```mermaid
+sequenceDiagram
+    actor P as Pelanggan
+    participant J as Server Jakarta
+    participant R as Proses Replikasi
+    participant B as Server Bandung
+
+    P->>J: Top-up Rp50.000 untuk user1
+    J->>J: Baca saldo Rp0, tulis Rp50.000 (versi 1)
+    J-->>P: Top-up berhasil, versi 1
+    J->>R: Jadwalkan replikasi versi 1 (delay 2 detik)
+    Note over P,B: Setelah 0,5 detik, pelanggan membaca melalui Bandung
+    P->>B: Baca saldo user1
+    B->>B: Data masih Rp0 (versi 0)
+    B-->>P: Saldo Rp0
+    Note over P,B: BUG: inconsistent read; pemesanan berisiko ditolak
+    Note over R,B: Setelah delay 2 detik
+    R->>B: Replikasi saldo Rp50.000 (versi 1)
+    B->>B: Simpan saldo dan versi terbaru
+```
+
+**Titik kegagalan:** Bandung melayani pembacaan sebelum memperoleh hasil top-up di Jakarta. Pembaruan pada akhirnya sampai ke Bandung, tetapi pelanggan sudah lebih dahulu menerima saldo lama.
+
+### 3.2 Dengan Read-Your-Writes (Bug Teratasi)
+
+```mermaid
+sequenceDiagram
+    actor P as Pelanggan
+    participant S as Sistem Pembacaan
+    participant J as Server Jakarta
+    participant R as Proses Replikasi
+    participant B as Server Bandung
+
+    Note over J,B: Kondisi awal: kedua server menyimpan Rp50.000 (versi 1)
+    P->>J: Top-up tambahan Rp20.000
+    J->>J: Tulis saldo Rp70.000 (versi 2)
+    J-->>P: Top-up berhasil, catat versi minimal 2
+    J->>R: Jadwalkan replikasi versi 2 (delay 2 detik)
+    P->>S: Baca saldo via Bandung, versi minimal 2
+    S->>B: Periksa versi saldo user1
+    B-->>S: Versi tersedia 1
+    alt Versi Bandung lebih kecil dari versi minimal
+        S->>J: Periksa versi dan baca saldo terbaru
+        J-->>S: Saldo Rp70.000 (versi 2)
+        S-->>P: Saldo Rp70.000
+        Note over P,S: BERHASIL: hasil top-up pelanggan terbaca
+    else Versi Bandung memenuhi versi minimal
+        S->>B: Baca saldo langsung
+        B-->>S: Saldo dari versi yang memenuhi syarat
+        S-->>P: Saldo terbaru yang memenuhi versi minimal
+    end
+    Note over R,B: Setelah delay replikasi
+    R->>B: Replikasi saldo Rp70.000 (versi 2)
+    B->>B: Simpan saldo dan versi 2
+```
+
+**Titik perbaikan:** Pemeriksaan versi mencegah Bandung mengembalikan data versi 1 kepada pelanggan yang baru saja menulis versi 2. Pembacaan dialihkan ke Jakarta sampai Bandung memiliki data yang cukup baru. Pada kode simulasi, pengalihan ini dilakukan oleh fungsi `baca_saldo_read_your_writes()`.
+
 
 ### Bagian 1 — Analisis (wajib)
 
