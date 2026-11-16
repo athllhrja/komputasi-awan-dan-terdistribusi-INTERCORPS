@@ -16,6 +16,16 @@ Sequential Consistency dapat menjamin bahwa semua replika melihat urutan operasi
 Solusi yang lebih tepat adalah menerapkan Client-Centric Consistency, khususnya model Read-Your-Writes. Dengan mekanisme ini, pelanggan yang baru saja melakukan top-up di server Jakarta akan selalu melihat saldo terbarunya sendiri pada operasi baca berikutnya, meskipun proses replikasi ke server Bandung belum selesai. Pendekatan ini memberikan jaminan yang cukup kuat bagi pengguna tanpa harus memaksa seluruh sistem menjadi Sequential Consistency.
 ## Tugas Kelompok
 
+## 2. Usulan Solusi: Client-Centric Consistency (Read-Your-Writes)
+
+Solusi yang dipilih adalah **Read-Your-Writes (RYW)**, dengan jaminan Client-Centric Consistency. Mekanisme ini memastikan bahwa setelah pelanggan melakukan penulisan yang berhasil, pembacaan berikutnya oleh pelanggan yang sama tidak kembali ke versi sebelum penulisan tersebut.
+Dalam simulasi, setiap pembaruan saldo diberi nomor versi. Aplikasi atau sesi pelanggan mengingat **versi minimal** dari top-up terakhir. Saat hendak membaca saldo di Bandung, sistem membandingkan versi data di Bandung dengan versi minimal tersebut:
+
+1. Jika versi Bandung **lebih besar atau sama dengan** versi minimal, saldo dibaca langsung dari Bandung.
+2. Jika versi Bandung **lebih kecil**, sistem tidak menggunakan data lamanya dan mengalihkan pembacaan ke Jakarta, yaitu replika yang telah menerima top-up.
+3. Setelah replikasi selesai, Bandung dapat kembali melayani pembacaan langsung karena versinya sudah memenuhi syarat.
+
+
 ### Bagian 1 — Analisis (wajib)
 
 1. Tentukan: apakah kasus ini **membutuhkan Sequential Consistency** (semua replika melihat urutan operasi yang sama) atau **cukup Eventual Consistency** (replika akan konsisten "pada akhirnya", boleh sementara berbeda)? Berikan argumen berbasis dampak bisnis (mis. kasus saldo *e-wallet* jauh lebih sensitif dibanding kasus "jumlah like" di media sosial).
