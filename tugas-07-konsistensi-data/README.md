@@ -40,11 +40,15 @@ sequenceDiagram
     J->>J: Baca saldo Rp0, tulis Rp50.000 (versi 1)
     J-->>P: Top-up berhasil, versi 1
     J->>R: Jadwalkan replikasi versi 1 (delay 2 detik)
-    Note over P,B: Setelah 0,5 detik, pelanggan membaca melalui Bandung
+
+    Note over P,B: Setelah 0,5 detik pelanggan membaca melalui Bandung
+
     P->>B: Baca saldo user1
     B->>B: Data masih Rp0 (versi 0)
     B-->>P: Saldo Rp0
-    Note over P,B: BUG: inconsistent read; pemesanan berisiko ditolak
+
+    Note over P,B: BUG - Inconsistent read, pemesanan berisiko ditolak
+
     Note over R,B: Setelah delay 2 detik
     R->>B: Replikasi saldo Rp50.000 (versi 1)
     B->>B: Simpan saldo dan versi terbaru
@@ -86,45 +90,6 @@ sequenceDiagram
 ```
 
 **Titik perbaikan:** Pemeriksaan versi mencegah Bandung mengembalikan data versi 1 kepada pelanggan yang baru saja menulis versi 2. Pembacaan dialihkan ke Jakarta sampai Bandung memiliki data yang cukup baru. Pada kode simulasi, pengalihan ini dilakukan oleh fungsi `baca_saldo_read_your_writes()`.
-
-## 4. Skenario Tambahan: Pelacakan Lokasi Kurir RideNow
-
-### 4.1 Deskripsi Skenario
-
-RideNow merupakan contoh aplikasi transportasi online yang menampilkan lokasi kurir secara langsung kepada pelanggan.
-
-Ketika kurir berpindah lokasi, sistem secara berkala memperbarui koordinat kurir. Pembaruan tersebut direplikasi ke beberapa server agar pelanggan dapat memantau posisi kurir.
-
-Namun, keterlambatan replikasi dapat menyebabkan server tertentu menampilkan lokasi kurir beberapa detik lebih lambat daripada kondisi sebenarnya.
-
-### 4.2 Pemilihan Model Konsistensi
-
-Untuk kasus pelacakan lokasi kurir, model yang dipilih adalah **Eventual Consistency**.
-
-Alasan pemilihannya adalah:
-
-1. Posisi kurir berubah secara terus-menerus sehingga pembaruan data dilakukan dengan frekuensi tinggi.
-2. Keterlambatan posisi selama beberapa detik masih dapat ditoleransi untuk kebutuhan tampilan peta.
-3. Replikasi asinkron membantu mengurangi kebutuhan koordinasi antarreplika pada setiap pembaruan lokasi.
-4. Data lokasi tidak memiliki risiko finansial langsung sebesar data saldo e-wallet.
-
-Walaupun demikian, sistem perlu membatasi umur data lokasi agar informasi yang ditampilkan tidak terlalu lama. Penggunaan timestamp atau nomor versi juga dapat membantu mencegah pembaruan lama menimpa koordinat yang lebih baru.
-
-### 4.3 Perbandingan dengan FoodGo
-
-| Aspek | FoodGo (Saldo E-Wallet) | RideNow (Lokasi Kurir) |
-|---|---|---|
-| Jenis data | Saldo pelanggan | Koordinat lokasi kurir |
-| Dampak keterlambatan | Top-up tidak terlihat dan pesanan berisiko ditolak | Lokasi kurir terlambat diperbarui |
-| Toleransi keterlambatan | Rendah | Relatif lebih tinggi |
-| Model yang dipilih | Read-Your-Writes untuk pembacaan setelah top-up | Eventual Consistency |
-| Pertimbangan utama | Ketepatan pembacaan saldo dan kepercayaan pelanggan | Efisiensi pembaruan lokasi secara berkala |
-
-### 4.4 Kesimpulan Skenario Tambahan
-
-Pemilihan model konsistensi harus mempertimbangkan karakteristik data dan dampak bisnis yang ditimbulkan.
-
-Pada FoodGo, Read-Your-Writes diperlukan agar pelanggan dapat langsung melihat hasil top-up. Sebaliknya, pada sistem pelacakan lokasi RideNow, Eventual Consistency lebih sesuai karena keterlambatan pembaruan posisi dalam batas tertentu masih dapat ditoleransi.
 
 
 ### Bagian 1 — Analisis (wajib)
